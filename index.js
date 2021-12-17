@@ -20,7 +20,7 @@ bot.on('message', msg => {
     }
 })
 
-bot.command('start', msg => {
+bot.start((msg) => {
     const text = `Привет ${msg.from.first_name}, я готов к работе`
     bot.sendMessage(msg.chat.id, text, {
         reply_markup:{
