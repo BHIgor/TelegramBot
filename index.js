@@ -12,10 +12,17 @@ bot.on('message', msg => {
         case kb.home.favorite:
             break
         case kb.home.films:
+            bot.sendMessage(chatId, `Выберите жанр:`,{
+                reply_markup:{keyboard:keyboard.films}
+            })
             break
-        case kb.home.cine:
+        case kb.home.cinemas:
             break
-                    
+        case kb.back:
+            bot.sendMessage(chatId, `Что хотите посмотреть?`,{
+                reply_markup:{keyboard:keyboard.home}
+            })
+        break           
     }
 })
 

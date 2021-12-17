@@ -5,6 +5,10 @@ module.exports = {
         cinemas:'Кинотеатры'
     },
     film:{
-
-    }
+        random:'Рандомне',
+        action:'Экшн',
+        comedy:'Комедия',
+        triller:'Триллер'
+    },
+    back:'Назад'
 }
