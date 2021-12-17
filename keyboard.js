@@ -7,7 +7,7 @@ module.exports = {
     ],
     films:[
         [kb.film.random, kb.film.triller],
-        [kb.film.comedy, kb.film.action]
+        [kb.film.comedy, kb.film.action],
         [kb.back]
     ]
 
