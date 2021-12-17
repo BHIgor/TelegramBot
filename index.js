@@ -8,9 +8,12 @@ const bot = new TelegramBot(TOKEN, {polling:true})
 
 
 bot.on('message', msg => {
-    switch (msg.text){
-
-    }
+    const text = `Привет ${msg.from.first_name}, я готов к работе`
+    bot.sendMessage(msg.chat.id, text, {
+        reply_markup:{
+            keyboard:keyboard.home
+        }
+    })
 })
 
 bot.onText(/\start/, msg => {
