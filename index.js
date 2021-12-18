@@ -2,7 +2,13 @@ const TelegramBot = require('node-telegram-bot-api')
 const kb = require('./keyboard-buttons')
 const keyboard = require('./keyboard')
 const helper = require('./helper')
-//ыыыы
+
+const TelegramServer = require('telegram-test-api');
+  let serverConfig = {port: 9000};
+  let server = new TelegramServer(serverConfig);
+  await server.start();
+
+  
 helper.logStart()
 
 const TOKEN = "5033990491:AAGKChEe_nf0SpyjZLb-QxKKw9E8YhpWO5s"
