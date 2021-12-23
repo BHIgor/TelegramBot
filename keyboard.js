@@ -2,13 +2,13 @@ const kb = require('./keyboard-buttons')
 
 module.exports = {
     home:[
-     [kb.home.glaza, kb.home.instruction],
+     [kb.home.glaza, kb.home.tarif],
      [kb.home.keryvannya],
-     [kb.home.profile, kb.home.news]
+     [kb.home.profile, kb.home.instruction, kb.home.news]
     ],
-    nakrutka:[
- 
+    back:[
         [kb.back]
-    ]
+    ],
+   
 
 }
