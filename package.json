@@ -14,11 +14,15 @@
   "dependencies": {
     "express": "^4.17.2",
     "global-tunnel": "^1.2.0",
+    "google-spreadsheet": "^3.2.0",
+    "googleapis": "^39.2.0",
+    "mongodb": "^4.2.2",
     "node-telegram-bot-api": "^0.56.0",
     "request": "^2.88.2",
     "socks5-https-client": "^1.2.1",
     "telegram": "^2.1.0",
-    "telegram-test-api": "^4.1.2"
+    "telegram-test-api": "^4.1.2",
+    "util": "^0.12.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
