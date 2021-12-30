@@ -210,9 +210,7 @@ case kb.home.instruction:
             `,{
                 reply_markup:{ resize_keyboard: true,keyboard:keyboard.back}
             })
-        bot.on('message', msg=>{
-            bot.sendMessage(chatId,'sdasdasd')
-        })
+     
 break
 case kb.blockhome.proba:   
 
