@@ -350,7 +350,7 @@ case kb.home.keryvannya:
                
             objKeruvannya.map(e => {
                 if(Number(e.id) === chatId){
-                    bot.sendMessage(chatId,`<b>Пост добавлен</b> ${e.time}\n${(e.name==='Подписчики')?`<a href='${e.idChannel}'>${e.name}</a>`:`<a href='https://t.me/c/${e.idChannel}/${e.post}'>${e.name}</a>`}\n<b>Заказано:</b> ${e.count} ${(e.name==='Подписчики')?'Подписчиков':'Просмотров'}`,{
+                    bot.sendMessage(chatId,`<b>Заказ добавлен</b> ${e.time}\n${(e.name==='Подписчики')?`<a href='${e.idChannel}'>${e.name}</a>`:`<a href='https://t.me/c/${e.idChannel}/${e.post}'>${e.name}</a>`}\n<b>Заказано:</b> ${e.count} ${(e.name==='Подписчики')?'Подписчиков':'Просмотров'}`,{
                         reply_markup:{ resize_keyboard: true,  inline_keyboard:  [
                             [    {
                                     text:'❌ Удалить',
@@ -969,6 +969,7 @@ bot.on('callback_query',  query => {
             let posts = query.message.entities[1].url.substring(26)
             let idChannels = query.message.entities[1].url.substring(15,25)
             let masivNakrutka = `${idChannels},${posts}`
+            console.log(query.message.entities[1])
             client.authorize(function(err,tokens){
                 if(err){
                     console.log(err)
@@ -1028,7 +1029,7 @@ bot.on('callback_query',  query => {
                 }
                 await gsapi.spreadsheets.values.clear(clearRange2)
                 await gsapi.spreadsheets.values.update(updatealls)
-                bot.sendMessage(query.message.chat.id,'✔️ Пост удален с накрутки')
+                bot.sendMessage(query.message.chat.id,'✔️ Заказ удален с накрутки')
                 bot.sendMessage('@f31f122',`❌ Удалить пост: ${posts}\nId канала: ${idChannels} ❌`)
 
               
