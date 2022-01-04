@@ -757,8 +757,6 @@ case kb.back:
         let data = await gsapi.spreadsheets.values.get(all)
         let allID = data.data.values.flat().map(Number)
         numberIndex = allID.indexOf(chatId)
-
-        
         const allProba = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:'D1:D'
