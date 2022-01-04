@@ -350,7 +350,7 @@ case kb.home.keryvannya:
                
             objKeruvannya.map(e => {
                 if(Number(e.id) === chatId){
-                    bot.sendMessage(chatId,`<b>Пост добавлен</b> ${e.time}\n${(e.name==='Подписчики')?`<a href='${e.idChannel}>${e.name}</a>`:`<a href='https://t.me/c/${e.idChannel}/${e.post}'>${e.name}</a>`}\n<b>Заказано:</b> ${e.count} ${(e.name==='Подписчики')?'Подписчиков':'Просмотров'}`,{
+                    bot.sendMessage(chatId,`<b>Пост добавлен</b> ${e.time}\n${(e.name==='Подписчики')?`<a href='${e.idChannel}'>${e.name}</a>`:`<a href='https://t.me/c/${e.idChannel}/${e.post}'>${e.name}</a>`}\n<b>Заказано:</b> ${e.count} ${(e.name==='Подписчики')?'Подписчиков':'Просмотров'}`,{
                         reply_markup:{ resize_keyboard: true,  inline_keyboard:  [
                             [    {
                                     text:'❌ Удалить',
