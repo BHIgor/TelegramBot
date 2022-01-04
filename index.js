@@ -347,10 +347,10 @@ case kb.home.keryvannya:
             let objKeruvannya = allID.map(row =>
                 row.reduce((acc, cur, i) =>
                   (acc[key[i]] = cur, acc), {}))
-       
+               
             objKeruvannya.map(e => {
                 if(Number(e.id) === chatId){
-                    bot.sendMessage(chatId,`<b>Пост добавлен</b> ${e.time}\n<a href='https://t.me/c/${e.idChannel}/${e.post}'>${e.name}</a>\n<b>Заказано:</b> ${e.count} просмотров`,{
+                    bot.sendMessage(chatId,`<b>Пост добавлен</b> ${e.time}\n${(e.name==='Подписчики')?`<a href='${e.idChannel}>${e.name}</a>`:`<a href='https://t.me/c/${e.idChannel}/${e.post}'>${e.name}</a>`}\n<b>Заказано:</b> ${e.count} ${(e.name==='Подписчики')?'Подписчиков':'Просмотров'}`,{
                         reply_markup:{ resize_keyboard: true,  inline_keyboard:  [
                             [    {
                                     text:'❌ Удалить',
