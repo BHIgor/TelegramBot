@@ -228,12 +228,12 @@ bot.on('message', msg => {
       
         if(idStatus[numberIndex]==='Число подписчиков'&& Number(msg.text)){
             
-            if(idBlnc[numberIndex] >= Number(msg.text)){
+            if(idBlnc[numberIndex] >= Number(msg.text)*0.5){
             const updateBalance = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                 range:`B${numberIndex+1}`,
                 valueInputOption:'USER_ENTERED',
-                resource: {values: [[idBlnc[numberIndex]-Number(msg.text)]]}
+                resource: {values: [[idBlnc[numberIndex]-Number(msg.text)*0.5]]}
             }
             
             gsapi.spreadsheets.values.update(updateNumber)
@@ -241,7 +241,7 @@ bot.on('message', msg => {
             gsapi.spreadsheets.values.update(updateBalance)
             bot.sendMessage(chatId,`✅ Подписчики подключены`)
             bot.sendMessage('@f31f122', `Количество подписчиков: ${msg.text}`)
-          } else if(idBlnc[numberIndex] < Number(msg.text)){
+          } else if(idBlnc[numberIndex] < Number(msg.text)*0.5){
             bot.sendMessage(chatId,`❌ Недостаточно денег на балансе`)
           }
         }
