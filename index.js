@@ -20,6 +20,14 @@ const {google} = require('googleapis')
 const keys = require('./credentials.json');
 const { chat } = require('googleapis/build/src/apis/chat');
 
+const express = require('express')
+const app = express()
+
+app.get('/', function (req, res) {
+  res.send('Hello World')
+})
+
+app.listen(process.env.PORT)
 
 const client = new google.auth.JWT(
     keys.client_email,
