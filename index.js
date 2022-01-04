@@ -84,6 +84,7 @@ bot.on('message', msg => {
         }
         let data = await gsapi.spreadsheets.values.get(all)
         let allID = data.data.values.flat().map(Number)
+        numberIndex = allID.indexOf(chatId)
         const allstatus = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:'G1:G'
@@ -129,7 +130,7 @@ bot.on('message', msg => {
         }
        
         
-        numberIndex = allID.indexOf(chatId)
+     
         if(idStatus[numberIndex]==='Оплата'&& Number(msg.text)){
             gsapi.spreadsheets.values.update(updateBalance)
             bot.sendMessage(chatId,`Вы пополняете счет на сумму ${Number(msg.text)} руб.\n\nВыберите способ оплаты:`,{
@@ -158,7 +159,7 @@ bot.on('message', msg => {
         let normalTime= `${new Date(postTime).getDate()}`+'.'+`${new Date(postTime).getMonth()+1}`+'.'+`${new Date(postTime).getFullYear()}`+` `+`${new Date(postTime). getHours()}`+`:`+`${new Date(postTime).getMinutes()}`+`:`+`${new Date(postTime).getSeconds()}`
   
         if(msg.forward_from_chat && idStatus[numberIndex]==='Накрутка'){
-            let idChannel = String(msg.forward_from_chat.id).substring(3)
+            let idChannel = String(msg.forward_from_chat.id).substring(4)
      
             const appendOptions = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -749,7 +750,6 @@ case kb.back:
     })
     async function saveBack(cl){
         const gsapi = google.sheets({version:'v4',auth: cl})
-        
         const all = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:'A1:A'
