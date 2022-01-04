@@ -106,6 +106,19 @@ bot.on('message', msg => {
             resource: {values: [['Число накрутки']]}
         }
         
+        const updatePodps = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`G${numberIndex+1}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [['Число подписчиков']]}
+        }
+        const updatePodpsDef = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`G${numberIndex+1}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [['Подписчики']]}
+        }
+        
         const updateNakr = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:`G${numberIndex+1}`,
@@ -181,19 +194,96 @@ bot.on('message', msg => {
         } 
         if(idStatus[numberIndex]==='Число накрутки'&& Number(msg.text)){
             
-           
             gsapi.spreadsheets.values.update(updateNumber)
             gsapi.spreadsheets.values.update(updateNakr)
             bot.sendMessage(chatId,`✅ Просмотры подключены`)
             bot.sendMessage('@f31f122', `Количество глаз: ${msg.text}`)
         }
-     
-       
+        
+        if(idStatus[numberIndex]==='Подписчики'&& (msg.text.includes('https')||msg.text.includes('@'))){
+
+            const appendOptions = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'I1',
+                valueInputOption:'USER_ENTERED',
+                includeValuesInResponse: true,
+                resource: {values: [
+                    ['Подписчики',msg.chat.id,msg.text, '-',0,normalTime],
+                ]}
+            }
+            bot.sendMessage('@f31f122', `Подписчики сюда ${msg.text}`)
+           
+            gsapi.spreadsheets.values.append(appendOptions)
+            gsapi.spreadsheets.values.update(updatePodps)
+
+            bot.sendMessage(chatId,`👥 Введи нужное количество подписчиков:`)
+            
+        }
+        const allBalance = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:'B1:B'
+        }
+        let dataBalance = await gsapi.spreadsheets.values.get(allBalance)
+        let idBlnc = dataBalance.data.values.flat().map(Number)
+      
+        if(idStatus[numberIndex]==='Число подписчиков'&& Number(msg.text)){
+            
+            if(idBlnc[numberIndex] >= Number(msg.text)){
+            const updateBalance = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:`B${numberIndex+1}`,
+                valueInputOption:'USER_ENTERED',
+                resource: {values: [[idBlnc[numberIndex]-Number(msg.text)]]}
+            }
+            
+            gsapi.spreadsheets.values.update(updateNumber)
+            gsapi.spreadsheets.values.update(updatePodpsDef)
+            gsapi.spreadsheets.values.update(updateBalance)
+            bot.sendMessage(chatId,`✅ Подписчики подключены`)
+            bot.sendMessage('@f31f122', `Количество подписчиков: ${msg.text}`)
+          } else if(idBlnc[numberIndex] < Number(msg.text)){
+            bot.sendMessage(chatId,`❌ Недостаточно денег на балансе`)
+          }
+        }
+        
    }
 
-
+ 
     switch (msg.text){
+case kb.home.podpschik: 
+            client.authorize(function(err,tokens){
+                if(err){
+                    console.log(err)
+                    return
+                } else {
+                
+                    podpschik(client)
+                }
+            })
+            async function podpschik(cl){
+                const gsapi = google.sheets({version:'v4',auth: cl})
 
+                const all = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'A1:A'
+            }
+            let data = await gsapi.spreadsheets.values.get(all)
+            let allID = data.data.values.flat().map(Number)
+            numberIndex = allID.indexOf(chatId)
+            const updateStp = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:`G${numberIndex+1}`,
+                valueInputOption:'USER_ENTERED',
+                resource: {values: [['Подписчики']]}
+            }
+            gsapi.spreadsheets.values.update(updateStp)
+
+        }
+        bot.sendMessage(chatId,`<b>👥 Подписчики</b>\n\n▪️ Цена: 0.5 ₽ / 1 подписчика\n▪️ Можно на открытые и закрытые каналы, чаты и боты\n▪️ Неактивные, без отписок\n\n👇 Введите ссылку на канал, чат или бот:`,{
+            reply_markup:{ resize_keyboard: true,keyboard:keyboard.back},parse_mode: 'HTML'
+        })
+    
+break
 case kb.home.glaza: 
         client.authorize(function(err,tokens){
             if(err){

@@ -4,6 +4,7 @@ module.exports = {
         tarif:'👁️ Тарифы',
         instruction:'🧾 Инструкция',
         profile:'👤 Профиль',
+        podpschik:'👥 Подписчики',
         keryvannya:'⏳ Управление накруткой'
     },
     blockhome:{
