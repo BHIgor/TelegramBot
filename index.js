@@ -41,7 +41,7 @@ helper.logStart()
 const TOKEN = "5026018289:AAEGOOK3RIFu7WEryesHPgX-Rr6w-BxOvwI"
 const bot = new TelegramBot(TOKEN, {polling:true})
 let test = 0
-let numberIndex = 0
+let numberIndex = 1
 let summ = 0
 let time = 0
 bot.on('message', msg => {
@@ -284,6 +284,40 @@ case kb.home.podpschik:
         })
     
 break
+case kb.blockhome.podpschik: 
+            client.authorize(function(err,tokens){
+                if(err){
+                    console.log(err)
+                    return
+                } else {
+                
+                    podpschikblc(client)
+                }
+            })
+            async function podpschikblc(cl){
+                const gsapi = google.sheets({version:'v4',auth: cl})
+
+                const all = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'A1:A'
+            }
+            let data = await gsapi.spreadsheets.values.get(all)
+            let allID = data.data.values.flat().map(Number)
+            numberIndex = allID.indexOf(chatId)
+            const updateStp = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:`G${numberIndex+1}`,
+                valueInputOption:'USER_ENTERED',
+                resource: {values: [['Подписчики']]}
+            }
+            gsapi.spreadsheets.values.update(updateStp)
+
+        }
+        bot.sendMessage(chatId,`<b>👥 Подписчики</b>\n\n▪️ Цена: 0.5 ₽ / 1 подписчика\n▪️ Можно на открытые и закрытые каналы, чаты и боты\n▪️ Неактивные, без отписок\n\n👇 Введите ссылку на канал, чат или бот:`,{
+            reply_markup:{ resize_keyboard: true,keyboard:keyboard.back},parse_mode: 'HTML'
+        })
+    
+break
 case kb.home.glaza: 
         client.authorize(function(err,tokens){
             if(err){
@@ -341,7 +375,7 @@ case kb.home.keryvannya:
             }
             let data = await gsapi.spreadsheets.values.get(all)
             let  allID = data.data.values   
-            
+            numberIndex = allID.indexOf(chatId) 
            if(allID !== undefined){
             let  key = ['name','id','idChannel','post', 'count','time']
             let objKeruvannya = allID.map(row =>
@@ -361,7 +395,7 @@ case kb.home.keryvannya:
                     })
                     }
                 })    
-                numberIndex = allID.indexOf(chatId) 
+              
             }
            
         }
@@ -396,7 +430,7 @@ case kb.home.profile:
                 }
                 let data = await gsapi.spreadsheets.values.get(all)
                 let allID = data.data.values.flat().map(Number)
-        
+                numberIndex = allID.indexOf(chatId)
                 const allBalance = {
                     spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                     range:'B1:B'
@@ -411,7 +445,7 @@ case kb.home.profile:
                 let dataTarif = await gsapi.spreadsheets.values.get(allTarif)
                 let idTrf = dataTarif.data.values.flat()
                 
-                numberIndex = allID.indexOf(chatId)
+             
      
         
           
