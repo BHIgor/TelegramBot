@@ -10,6 +10,7 @@ module.exports = {
     blockhome:{
         kupit:'🔓 Купить аренду',
         tarif:'👁️ Тарифы',
+        podpschik:'👥 Подписчики',
         proba:'🎁 Пробный период',
         instruction:'🧾 Инструкция',
         profile:'👤 Профиль',
