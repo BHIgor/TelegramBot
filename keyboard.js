@@ -13,7 +13,7 @@ module.exports = {
     ],
     blockhome:[
         [kb.blockhome.kupit, kb.blockhome.tarif],
-        [kb.blockhome.proba],
+        [kb.home.podpschik, kb.blockhome.proba],
         [kb.blockhome.profile, kb.blockhome.instruction]
     ],
     profile:[
