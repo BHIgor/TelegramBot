@@ -19,7 +19,7 @@ const clientApi = new TelegramClient(session, apiId, apiHash, {});
 const {google} = require('googleapis')
 const keys = require('./credentials.json');
 const { chat } = require('googleapis/build/src/apis/chat');
-/*
+
 const express = require('express')
 const app = express()
 
@@ -28,7 +28,7 @@ app.get('/', function (req, res) {
 })
 
 app.listen(process.env.PORT)
-*/
+
 const client = new google.auth.JWT(
     keys.client_email,
     null,
@@ -989,23 +989,7 @@ bot.on('callback_query',  query => {
                 }
                 let data = await gsapi.spreadsheets.values.get(all)
                 let allID = data.data.values
-                const name = {
-                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
-                    range:'I2:I'
-                }
-                let dataname = await gsapi.spreadsheets.values.get(name)
-                let allName = dataname.data.values
-
-                const chanel = {
-                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
-                    range:'K2:K'
-                }
-                let datachanel = await gsapi.spreadsheets.values.get(chanel)
-                let allChanel = datachanel.data.values
-                numberIndexpdp = allChanel.indexOf(channelsPodp)
-                if(allName[numberIndexpdp]==='Подписчики'){
-                    console.log('ssssss')
-                }   else{
+              
                 let newmasiv = []
                 allID.map(e=>{
                     newmasiv.push(e.join())
@@ -1050,7 +1034,7 @@ bot.on('callback_query',  query => {
                 bot.sendMessage('@f31f122',`❌ Удалить заказ ${channelsPodp} ❌`)
 
             }
-            }
+            
           
          
         break
