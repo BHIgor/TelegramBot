@@ -38,7 +38,7 @@ const client = new google.auth.JWT(
 
 helper.logStart()
 
-const TOKEN = "5026018289:AAEGOOK3RIFu7WEryesHPgX-Rr6w-BxOvwI"
+const TOKEN = "5039294103:AAFFh9LS2vzmzPoVWc0usWfYN-cq5CNjIy8"
 const bot = new TelegramBot(TOKEN, {polling:true})
 let test = 0
 let numberIndex = 0
