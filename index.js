@@ -340,13 +340,13 @@ case kb.home.glaza:
             let allID = data.data.values.flat().map(Number)
             numberIndex = allID.indexOf(chatId)
 
-            const updateNakr = {
+            const updateNakrz = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                 range:`G${numberIndex+1}`,
                 valueInputOption:'USER_ENTERED',
                 resource: {values: [['Накрутка']]}
             }
-            gsapi.spreadsheets.values.update(updateNakr)
+            gsapi.spreadsheets.values.update(updateNakrz)
 
           
         }
