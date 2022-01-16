@@ -338,21 +338,30 @@ case kb.home.glaza:
             }
             let data = await gsapi.spreadsheets.values.get(all)
             let allID = data.data.values.flat().map(Number)
-            numberIndex = allID.indexOf(chatId)
 
-            const updateNakrz = {
+            const allStatusTarif = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
-                range:`G${numberIndex+1}`,
-                valueInputOption:'USER_ENTERED',
-                resource: {values: [['Накрутка']]}
+                range:'D1:D'
             }
-            gsapi.spreadsheets.values.update(updateNakrz)
+            let dataStatusTarif  = await gsapi.spreadsheets.values.get(allStatusTarif)
+            let allStatus = dataStatusTarif.data.values.flat()
 
-          
+            numberIndex = allID.indexOf(chatId)
+            if(numberIndex[allStatus] ==='yes'){
+                const updateNakrz = {
+                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                    range:`G${numberIndex+1}`,
+                    valueInputOption:'USER_ENTERED',
+                    resource: {values: [['Накрутка']]}
+                }
+                gsapi.spreadsheets.values.update(updateNakrz)
+                bot.sendMessage(chatId, `Перешлите пост на который нужно накрутить`,{
+                    reply_markup:{ resize_keyboard: true,keyboard:keyboard.back}
+                })
+            }
+            
         }
-        bot.sendMessage(chatId, `Перешлите пост на который нужно накрутить`,{
-            reply_markup:{ resize_keyboard: true,keyboard:keyboard.back}
-        })
+       
         break 
 
 case kb.home.keryvannya: 
