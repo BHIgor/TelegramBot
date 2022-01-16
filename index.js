@@ -347,7 +347,8 @@ case kb.home.glaza:
             let allStatus = dataStatusTarif.data.values.flat()
 
             numberIndex = allID.indexOf(chatId)
-            if(numberIndex[allStatus] ==='yes'){
+  
+            if(allStatus[numberIndex] ==='yes'){
                 const updateNakrz = {
                     spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                     range:`G${numberIndex+1}`,
