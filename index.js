@@ -264,7 +264,8 @@ case 'Админ подпишись на новости':
         }
     })
     async function admin(cl){
-         
+        const gsapi = google.sheets({version:'v4',auth: cl})
+
         const all = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:'A1:A'
