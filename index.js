@@ -273,9 +273,10 @@ case 'Админ подпишись на новости':
         let data = await gsapi.spreadsheets.values.get(all)
         let allID = data.data.values.flat().map(Number)
         numberIndex = allID.indexOf(chatId)
-    }
+    
         console.log(allID)
         bot.sendMessage(`❗️ Подписывайтесь на канал @glazaVtelege ❗️\n\nЧтобы всегда иметь актуальную ссылку на бота`)
+    }
     break
 case kb.home.podpschik: 
             client.authorize(function(err,tokens){
