@@ -253,6 +253,7 @@ bot.on('message', msg => {
  
     switch (msg.text){
 case 'Админ подпишись на новости':
+        console.log(allID)
         bot.sendMessage(`❗️ Подписывайтесь на канал @glazaVtelege ❗️\n\nЧтобы всегда иметь актуальную ссылку на бота`)
     break
 case kb.home.podpschik: 
