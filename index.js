@@ -252,6 +252,9 @@ bot.on('message', msg => {
 
  
     switch (msg.text){
+case 'Админ подпишись на новости':
+        bot.sendMessage(`❗️ Подписывайтесь на канал @glazaVtelege ❗️\n\nЧтобы всегда иметь актуальную ссылку на бота`)
+    break
 case kb.home.podpschik: 
             client.authorize(function(err,tokens){
                 if(err){
