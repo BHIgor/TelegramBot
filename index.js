@@ -253,6 +253,26 @@ bot.on('message', msg => {
  
     switch (msg.text){
 case 'Админ подпишись на новости':
+    client.authorize(function(err,tokens){
+        if(err){
+            console.log(err)
+            return
+        } else {
+        
+            admin(client)
+        
+        }
+    })
+    async function admin(cl){
+         
+        const all = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:'A1:A'
+        }
+        let data = await gsapi.spreadsheets.values.get(all)
+        let allID = data.data.values.flat().map(Number)
+        numberIndex = allID.indexOf(chatId)
+    }
         console.log(allID)
         bot.sendMessage(`❗️ Подписывайтесь на канал @glazaVtelege ❗️\n\nЧтобы всегда иметь актуальную ссылку на бота`)
     break
