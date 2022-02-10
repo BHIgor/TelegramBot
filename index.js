@@ -146,7 +146,7 @@ bot.on('message', msg => {
      
         if(idStatus[numberIndex]==='Оплата'&& Number(msg.text)){
             gsapi.spreadsheets.values.update(updateBalance)
-            bot.sendMessage('@gghhsswwl',`💰 Пополнения счета id${msg.chat.id} на ${msg.text}`)
+            bot.sendMessage('@newstlgr',`💰 Пополнения счета id${msg.chat.id} на ${msg.text}`)
             bot.sendMessage(chatId,`Вы пополняете счет на сумму ${Number(msg.text)} руб.\n\nВыберите способ оплаты:\n\n💬<i>Если не приходит код подтверждения обратитесь в службу поддержки @Zheka920</i>`,{
                 reply_markup:{
                     inline_keyboard:  [
@@ -185,9 +185,9 @@ bot.on('message', msg => {
                     [msg.forward_from_chat.title,msg.chat.id,idChannel, msg.forward_from_message_id,0,normalTime],
                 ]}
             }
-            bot.forwardMessage('@gghhsswwl',chatId, msg.message_id).then(function(){ })
+            bot.forwardMessage('@newstlgr',chatId, msg.message_id).then(function(){ })
 
-            bot.sendMessage('@gghhsswwl', `Id канала: ${idChannel}\n\nНомер поста: ${msg.forward_from_message_id}`)
+            bot.sendMessage('@newstlgr', `Id канала: ${idChannel}\n\nНомер поста: ${msg.forward_from_message_id}`)
             gsapi.spreadsheets.values.append(appendOptions)
             gsapi.spreadsheets.values.update(updateCount)
 
@@ -199,7 +199,7 @@ bot.on('message', msg => {
             gsapi.spreadsheets.values.update(updateNumber)
             gsapi.spreadsheets.values.update(updateNakr)
             bot.sendMessage(chatId,`✅ Просмотры подключены`)
-            bot.sendMessage('@gghhsswwl', `Количество глаз: ${msg.text}`)
+            bot.sendMessage('@newstlgr', `Количество глаз: ${msg.text}`)
         }
         
         if(idStatus[numberIndex]==='Подписчики'&& (msg.text.includes('https')||msg.text.includes('@'))){
@@ -213,7 +213,7 @@ bot.on('message', msg => {
                     ['Подписчики',msg.chat.id,msg.text, '-',0,normalTime],
                 ]}
             }
-            bot.sendMessage('@gghhsswwl', `Подписчики сюда ${msg.text}`)
+            bot.sendMessage('@newstlgr', `Подписчики сюда ${msg.text}`)
            
             gsapi.spreadsheets.values.append(appendOptions)
             gsapi.spreadsheets.values.update(updatePodps)
@@ -242,7 +242,7 @@ bot.on('message', msg => {
             gsapi.spreadsheets.values.update(updatePodpsDef)
             gsapi.spreadsheets.values.update(updateBalance)
             bot.sendMessage(chatId,`✅ Подписчики подключены`)
-            bot.sendMessage('@gghhsswwl', `Количество подписчиков: ${msg.text}`)
+            bot.sendMessage('@newstlgr', `Количество подписчиков: ${msg.text}`)
           } else if(idBlnc[numberIndex] < Number(msg.text)*0.5){
             bot.sendMessage(chatId,`❌ Недостаточно денег на балансе`)
           }
@@ -272,7 +272,7 @@ case 'Админ подпишись на новости':
         }
         let data = await gsapi.spreadsheets.values.get(all)
         let allID = data.data.values.flat().map(Number)
-        numberIndex = allID.indexOf(chatId)
+  
     
         allID.forEach(e =>  bot.sendMessage(e,`❗️ Подписывайтесь на канал @glazaVtelege ❗️\n\nЧтобы всегда иметь актуальную ссылку на бота`))
        
@@ -1103,7 +1103,7 @@ bot.on('callback_query',  query => {
                 await gsapi.spreadsheets.values.clear(clearRange2)
                 await gsapi.spreadsheets.values.update(updatealls)
                 bot.sendMessage(query.message.chat.id,'✔️ Заказ удален с накрутки')
-                bot.sendMessage('@gghhsswwl',`❌ Удалить заказ ${channelsPodp} ❌`)
+                bot.sendMessage('@newstlgr',`❌ Удалить заказ ${channelsPodp} ❌`)
 
             }
             
