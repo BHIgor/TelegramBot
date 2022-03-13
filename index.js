@@ -59,7 +59,7 @@ bot.on('message', msg => {
         }
     })
     async function status(cl){
-        const publicKey = '48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iPqQD6JkQycbDGTMKqjSE6zGHREdHw2CdeELpQ7Mm6YNTiQPe1GG4BSowUG3aqV3jgrEwgwW3tx8d6rARW3uCEW5qgpPNRcgTqJDv9PsQiB'
+        const publicKey = '48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iPyVXeQ7k1CmVN3LeuRPFHNEVECeqUZRYkspJKKndxy37sZGuDxYiozW4B7MZa1ca5EnJkFpsRUEfLqxScwGE2XphFFkAZm7mXmAgsjdXvP'
 
         const params = {
             publicKey,
