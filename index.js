@@ -176,13 +176,13 @@ bot.on('message', msg => {
         }
         const updateNumberAvto = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
-            range:`R${postIndexAvto}`,
+            range:`R${postIndexAvto+1}`,
             valueInputOption:'USER_ENTERED',
             resource: {values: [[msg.text]]}
         }
         const   updateNumberDayAvto = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
-            range:`S${postIndexAvto}`,
+            range:`S${postIndexAvto+1}`,
             valueInputOption:'USER_ENTERED',
             resource: {values: [[msg.text]]}
         }
