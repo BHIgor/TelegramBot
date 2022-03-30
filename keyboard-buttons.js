@@ -2,6 +2,7 @@ module.exports = {
     home:{
         glaza:'👀 Накрутка просмотров',
         tarif:'👁️ Тарифы',
+        avto:'👁‍🗨 Автопросмотры',
         instruction:'🧾 Инструкция',
         profile:'👤 Профиль',
         podpschik:'👥 Подписчики',

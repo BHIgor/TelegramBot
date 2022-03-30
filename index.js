@@ -44,6 +44,9 @@ let test = 0
 let numberIndex = 0
 let summ = 0
 let time = 0
+
+
+
 bot.on('message', msg => {
     const chatId = helper.getChatId(msg)
   
@@ -106,6 +109,13 @@ bot.on('message', msg => {
             resource: {values: [['Число накрутки']]}
         }
         
+          
+        const updateCountAvto = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`G${numberIndex+1}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [['Число автопросмотров']]}
+        }
         const updatePodps = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:`G${numberIndex+1}`,
@@ -126,6 +136,20 @@ bot.on('message', msg => {
             resource: {values: [['Накрутка']]}
         }
         
+           
+        const updateNakrAvto = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`G${numberIndex+1}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [['Дней накрутки']]}
+        }
+        const updateStatusAvto = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`G${numberIndex+1}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [['Автопросмотры']]}
+        }
+        
         const allNumberPost = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:'L1:L'
@@ -134,6 +158,15 @@ bot.on('message', msg => {
         let allNumberPostID = dataPost.data.values.flat()
       
         let postIndex = allNumberPostID.length
+
+        const allNumberPostAvto = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:'S1:S'
+        }
+        let dataPostAvto = await gsapi.spreadsheets.values.get(allNumberPostAvto)
+        let allNumberPostIDAvto = dataPostAvto.data.values.flat()
+      
+        let postIndexAvto = allNumberPostIDAvto.length
      
         const updateNumber = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -141,7 +174,19 @@ bot.on('message', msg => {
             valueInputOption:'USER_ENTERED',
             resource: {values: [[msg.text]]}
         }
-       
+        const updateNumberAvto = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`R${postIndexAvto}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [[msg.text]]}
+        }
+        const   updateNumberDayAvto = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`S${postIndexAvto}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [[msg.text]]}
+        }
+      
         
      
         if(idStatus[numberIndex]==='Оплата'&& Number(msg.text)){
@@ -202,7 +247,13 @@ bot.on('message', msg => {
             bot.sendMessage('@newstlgr', `Количество глаз: ${msg.text}`)
         }
         
-        if(idStatus[numberIndex]==='Подписчики'&& (msg.text.includes('https')||msg.text.includes('@'))){
+        if(idStatus[numberIndex]==='Подписчики'&& (msg.text.includes('https')||msg.text.includes('t.me')||msg.text.includes('http')||msg.text.includes('@'))){
+            const allBalance = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'B1:B'
+            }
+            let dataBalance = await gsapi.spreadsheets.values.get(allBalance)
+            let idBlnc = dataBalance.data.values.flat().map(Number)
 
             const appendOptions = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -218,7 +269,7 @@ bot.on('message', msg => {
             gsapi.spreadsheets.values.append(appendOptions)
             gsapi.spreadsheets.values.update(updatePodps)
 
-            bot.sendMessage(chatId,`👥 Введи нужное количество подписчиков:`)
+            bot.sendMessage(chatId,`👥 Введи нужное количество подписчиков:\n\n Баланс позволяет накрутить <b>${Math.floor(idBlnc[numberIndex]/0.5)} подписчиков</b>`,{parse_mode: 'HTML' })
             
         }
         const allBalance = {
@@ -247,9 +298,89 @@ bot.on('message', msg => {
             bot.sendMessage(chatId,`❌ Недостаточно денег на балансе`)
           }
         }
-        
-   }
 
+        if(idStatus[numberIndex]==='Автопросмотры'&& (msg.text.includes('https')||msg.text.includes('t.me')||msg.text.includes('http')||msg.text.includes('@'))){
+            
+            const appendOptions = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'P1',
+                valueInputOption:'USER_ENTERED',
+                includeValuesInResponse: true,
+                resource: {values: [
+                    [msg.chat.id,(msg.text.includes('@')?`http://t.me/${msg.text}`:msg.text.includes('http')?`${msg.text}`:msg.text.includes('https')?`${msg.text}`:msg.text.includes('t.me')?`${msg.text}`:`${msg.text}`)],
+                ]}
+            }
+            bot.forwardMessage('@newstlgr',chatId, msg.message_id).then(function(){ })
+
+            bot.sendMessage('@newstlgr', `👁‍🗨 АВТОПРОСМОТРЫ 👁‍🗨 ${msg.text}`)
+            gsapi.spreadsheets.values.append(appendOptions)
+            gsapi.spreadsheets.values.update(updateCountAvto)
+
+            bot.sendMessage(chatId,`👁‍🗨 Введите нужное количество просмотров на один пост:`,{parse_mode: 'HTML' })
+        }
+        if(idStatus[numberIndex]==='Число автопросмотров'&& Number(msg.text)){
+            const allBalance = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'B1:B'
+            }
+            let dataBalance = await gsapi.spreadsheets.values.get(allBalance)
+            let idBlnc = dataBalance.data.values.flat().map(Number)
+         
+            gsapi.spreadsheets.values.update(updateNumberAvto)
+            gsapi.spreadsheets.values.update(updateNakrAvto)
+            bot.sendMessage(chatId,`⏳ Введите количество дней:\n\n Баланс позволяет продлить на <b>${Math.floor(idBlnc[numberIndex]/20)} дней</b>`,{
+               parse_mode: 'HTML'
+            })
+            bot.sendMessage('@newstlgr', `Количество просмотров на пост: ${msg.text}`)
+        }
+        if(idStatus[numberIndex]==='Дней накрутки'&& Number(msg.text)){
+            
+            if(idBlnc[numberIndex] >= Number(msg.text)*20){
+            const updateBalance = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:`B${numberIndex+1}`,
+                valueInputOption:'USER_ENTERED',
+                resource: {values: [[idBlnc[numberIndex]-Number(msg.text)*20]]}
+            }
+            
+            gsapi.spreadsheets.values.update(updateNumberDayAvto)
+            gsapi.spreadsheets.values.update(updateStatusAvto)
+            gsapi.spreadsheets.values.update(updateBalance)
+            bot.sendMessage(chatId,`✅ Автопросмотры подключены`)
+            bot.sendMessage('@newstlgr', `Количество дней: ${msg.text}`)
+          } else if(idBlnc[numberIndex] < Number(msg.text)*20){
+            bot.sendMessage(chatId,`❌ Недостаточно денег на балансе`)
+          }
+        }
+        if(idStatus[numberIndex]==='Продлевание'&& Number(msg.text)){
+             
+            if(idBlnc[numberIndex] >= Number(msg.text)*20){
+                const updateBalance = {
+                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                    range:`B${numberIndex+1}`,
+                    valueInputOption:'USER_ENTERED',
+                    resource: {values: [[idBlnc[numberIndex]-Number(msg.text)*20]]}
+                }
+           
+            gsapi.spreadsheets.values.update(updateBalance)
+            gsapi.spreadsheets.values.update(updateStatusAvto)
+            bot.sendMessage('@newstlgr', `Количество дней: ${msg.text}`)
+            bot.sendMessage(chatId,`✅ Автопросмотры продлены `)
+        }else if(idBlnc[numberIndex] < Number(msg.text)*20){
+            bot.sendMessage(chatId,`❌ Недостаточно денег на балансе`)
+          }}
+
+          if(idStatus[numberIndex]==='Количество автопросмотров'&& Number(msg.text)){
+             
+            gsapi.spreadsheets.values.update(updateStatusAvto)
+            bot.sendMessage('@newstlgr', `Количество просмотров: ${msg.text}`)
+            bot.sendMessage(chatId,`✅ Количество изменено `)
+        }
+        
+
+   }
+  
+    
  
     switch (msg.text){
 case 'Админ подпишись на новости':
@@ -391,7 +522,86 @@ case kb.home.glaza:
         }
        
         break 
+case kb.home.avto: 
+        client.authorize(function(err,tokens){
+            if(err){
+                console.log(err)
+                return
+            } else {
+            
+                statusAvto(client)
+            }
+        })
+        async function statusAvto(cl){
+            const gsapi = google.sheets({version:'v4',auth: cl})
 
+            const all = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'P2:S'
+            }
+            let data = await gsapi.spreadsheets.values.get(all)
+            let  allID = data.data.values
+         
+            numberIndex = allID.indexOf(chatId)
+
+            const allavto = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'A1:A'
+            }
+            let dataallavto = await gsapi.spreadsheets.values.get(allavto)
+            let allIDallavto = dataallavto.data.values.flat().map(Number)
+            numberIndexavto = allIDallavto.indexOf(chatId)
+            const updateStatusAvto = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:`G${numberIndexavto+1}`,
+                valueInputOption:'USER_ENTERED',
+                resource: {values: [['Автопросмотры']]}
+            }
+            
+          
+
+            bot.sendMessage(chatId, `<b>ℹ️ Автопросмотры - дополнительная платная опция</b>,которая подхватывает новые посты в канале автоматически. \n\nℹ️ Функция работает <b>только с активным тарифным планом</b> и оплачивается отдельно 20 ₽/день за каждый канал (кнопка «Продлить»)\n\n ℹ️ На каналах с автопросмотрами накрутка на новые посты начинается автоматически в <b>течение 3 мин после публикации,</b> на старые посты делайте вручную репостом\n\n ℹ️ Вы выставляете желаемое количество просмотров, но цифры на разных постах будут различаться для реалистичности.\n\n ℹ️ Максимальное количество просмотров на каждый пост определяется купленным тарифом. Количество просмотров выбираете сами.\n\n❇️ <b>Для того чтобы подключить</b> нужно прислать ссылку на канал, затем ввести количество нужных просмотров и количество дней на сколько будут подключены просмотры`,{
+                reply_markup:{ resize_keyboard: true,keyboard:keyboard.back},parse_mode:'HTML'
+            }).then(function(){ if(allID !== undefined){
+                let  key = ['id','channel','count','time']
+                let objKeruvannya = allID.map(row =>
+                    row.reduce((acc, cur, i) =>
+                      (acc[key[i]] = cur, acc), {}))
+                 
+                objKeruvannya.map(e => {
+                    if(Number(e.id) === chatId){
+                        bot.sendMessage(chatId,` 💬 <a href='${e.channel}'>${e.channel}</a> • 👁‍🗨 ${e.count} • 0 дней`,{
+                            reply_markup:{ resize_keyboard: true,  inline_keyboard:  [
+                                [
+                                    {
+                                        text:'📆 Продлить',
+                                        callback_data:`prodlit`
+                                    }
+                                ],
+                                [    {
+                                        text:'✏️ Изменить',
+                                        callback_data:`change`
+                                    },
+                                    {
+                                        text:'❌ Отключить',
+                                        callback_data:`cancel`
+                                    }
+                                ]
+                                ]},
+                            parse_mode:'HTML'
+                        })
+                        }
+                    })    
+                  
+                }}).then( bot.sendMessage(chatId, `👉 Чтобы подключить автопросмотры к новому каналу введите ссылку на канал:`,{
+                reply_markup:{ resize_keyboard: true,keyboard:keyboard.back},parse_mode:'HTML'
+            }))
+
+            
+          
+            gsapi.spreadsheets.values.update(updateStatusAvto)
+        }
+        break 
 case kb.home.keryvannya: 
         client.authorize(function(err,tokens){
             if(err){
@@ -721,7 +931,7 @@ case kb.tarif.week:
 
         })}
 break
-    case kb.tarif.month: 
+case kb.tarif.month: 
     client.authorize(function(err,tokens){
         if(err){
             console.log(err)
@@ -1036,6 +1246,126 @@ bot.on('callback_query',  query => {
             bot.sendMessage(query.message.chat.id, `Привет ${query.from.first_name}, я готов к работе`,{
                 reply_markup:{ resize_keyboard: true,keyboard:keyboard.blockhome}
             })  
+        break
+        case 'cancel':
+            client.authorize(function(err,tokens){
+                if(err){
+                    console.log(err)
+                    return
+                } else {
+                  
+                    cancels(client)
+                }
+            })
+            async function cancels(cl){
+                const gsapi = google.sheets({version:'v4',auth: cl})
+                
+                let сhannelss = query.message.entities[0].url
+                const all = {
+                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                    range:'A1:A'
+                }
+                let data = await gsapi.spreadsheets.values.get(all)
+                let allID = data.data.values.flat().map(Number)
+                numberIndex = allID.indexOf(query.message.chat.id)
+           
+                const updateNakrAvto = {
+                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                    range:`G${numberIndex+1}`,
+                    valueInputOption:'USER_ENTERED',
+                    resource: {values: [['Автопросмотры']]}
+                }
+                gsapi.spreadsheets.values.update(updateNakrAvto)
+      
+              
+            bot.sendMessage(query.message.chat.id, `✅ Канал удален ✅`,{
+                parse_mode: 'HTML'
+            })  
+            bot.sendMessage('@newstlgr', `❌👁‍🗨 Удалить канал с автопросмотров: ${сhannelss}👁‍🗨❌`)
+        }
+        break
+        case 'change':
+            client.authorize(function(err,tokens){
+                if(err){
+                    console.log(err)
+                    return
+                } else {
+                  
+                    changes(client)
+                }
+            })
+            async function changes(cl){
+                const gsapi = google.sheets({version:'v4',auth: cl})
+                
+                let сhannelss = query.message.entities[0].url
+                const all = {
+                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                    range:'A1:A'
+                }
+                let data = await gsapi.spreadsheets.values.get(all)
+                let allID = data.data.values.flat().map(Number)
+                numberIndex = allID.indexOf(query.message.chat.id)
+           
+                const updateNakrAvto = {
+                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                    range:`G${numberIndex+1}`,
+                    valueInputOption:'USER_ENTERED',
+                    resource: {values: [['Количество автопросмотров']]}
+                }
+                gsapi.spreadsheets.values.update(updateNakrAvto)
+      
+              
+            bot.sendMessage(query.message.chat.id, `👁‍🗨 Введите нужное количество просмотров на один пост:`,{
+                parse_mode: 'HTML'
+            })  
+            bot.sendMessage('@newstlgr', `✏️Изменить количество автопросмотров: ${сhannelss}✏️`)
+        }
+        break
+        case 'prodlit':
+        
+            client.authorize(function(err,tokens){
+                if(err){
+                    console.log(err)
+                    return
+                } else {
+                  
+                    prodlits(client)
+                }
+            })
+            async function prodlits(cl){
+                const gsapi = google.sheets({version:'v4',auth: cl})
+                
+                let сhannelss = query.message.entities[0].url
+                const all = {
+                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                    range:'A1:A'
+                }
+                let data = await gsapi.spreadsheets.values.get(all)
+                let allID = data.data.values.flat().map(Number)
+                numberIndex = allID.indexOf(query.message.chat.id)
+           
+                const updateNakrAvto = {
+                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                    range:`G${numberIndex+1}`,
+                    valueInputOption:'USER_ENTERED',
+                    resource: {values: [['Продлевание']]}
+                }
+                gsapi.spreadsheets.values.update(updateNakrAvto)
+      
+                const allBalance = {
+                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                    range:'B1:B'
+                }
+                let dataBalance = await gsapi.spreadsheets.values.get(allBalance)
+                let idBlnc = dataBalance.data.values.flat().map(Number)
+             
+           
+            bot.sendMessage(query.message.chat.id, `ℹ️ Сутки автопросмотров = 20 ₽.\n\n🌀 Ваш баланс позволяет продлить автопросмотры на <b>${Math.floor(idBlnc[numberIndex]/20)} дней</b>\n\n👉 Введите количество дней для продления:`,{
+                parse_mode: 'HTML'
+            })  
+            bot.sendMessage('@newstlgr', `⏳Продлить автопросмотры: ${сhannelss}⏳`)
+        }
+     
         break
         case 'delete':
             let posts = query.message.entities[1].url.substring(26)
