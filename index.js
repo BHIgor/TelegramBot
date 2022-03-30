@@ -180,7 +180,7 @@ bot.on('message', msg => {
             valueInputOption:'USER_ENTERED',
             resource: {values: [[msg.text]]}
         }
-        let tarifTime = new Date().getTime()+(msg.text*86400)*1000
+        let tarifTime = new Date().getTime()+(msg.text*97200)*1000
         let tarifDay = `${new Date(tarifTime).getDate()}`+'.'+`${new Date(tarifTime).getMonth()+1}`+'.'+`${new Date(tarifTime).getFullYear()}`+` `+`${new Date(tarifTime). getHours()}`+`:`+`${new Date(tarifTime).getMinutes()}`+`:`+`${new Date(tarifTime).getSeconds()}`
         const   updateNumberDayAvto = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
