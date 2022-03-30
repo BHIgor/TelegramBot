@@ -180,11 +180,13 @@ bot.on('message', msg => {
             valueInputOption:'USER_ENTERED',
             resource: {values: [[msg.text]]}
         }
+        let tarifTime = new Date().getTime()+(msg.text*86400)*1000
+        let tarifDay = `${new Date(tarifTime).getDate()}`+'.'+`${new Date(tarifTime).getMonth()+1}`+'.'+`${new Date(tarifTime).getFullYear()}`+` `+`${new Date(tarifTime). getHours()}`+`:`+`${new Date(tarifTime).getMinutes()}`+`:`+`${new Date(tarifTime).getSeconds()}`
         const   updateNumberDayAvto = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:`S${postIndexAvto+1}`,
             valueInputOption:'USER_ENTERED',
-            resource: {values: [[msg.text]]}
+            resource: {values: [[tarifDay]]}
         }
       
         
@@ -334,7 +336,7 @@ bot.on('message', msg => {
             bot.sendMessage('@newstlgr', `Количество просмотров на пост: ${msg.text}`)
         }
         if(idStatus[numberIndex]==='Дней накрутки'&& Number(msg.text)){
-            
+           
             if(idBlnc[numberIndex] >= Number(msg.text)*20){
             const updateBalance = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -570,7 +572,7 @@ case kb.home.avto:
                  
                 objKeruvannya.map(e => {
                     if(Number(e.id) === chatId){
-                        bot.sendMessage(chatId,` 💬 <a href='${e.channel}'>${e.channel}</a> • 👁‍🗨 ${e.count} • 0 дней`,{
+                        bot.sendMessage(chatId,` 💬 <a href='${e.channel}'>${e.channel}</a> • 👁‍🗨 ${e.count} • до ${e.time}`,{
                             reply_markup:{ resize_keyboard: true,  inline_keyboard:  [
                                 [
                                     {
