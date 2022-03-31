@@ -320,6 +320,8 @@ bot.on('message', msg => {
 
             bot.sendMessage(chatId,`👁‍🗨 Введите нужное количество просмотров на один пост:`,{parse_mode: 'HTML' })
         }
+       
+    
         if(idStatus[numberIndex]==='Число автопросмотров'&& Number(msg.text)){
             const allBalance = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -335,9 +337,16 @@ bot.on('message', msg => {
             })
             bot.sendMessage('@newstlgr', `Количество просмотров на пост: ${msg.text}`)
         }
+ 
         if(idStatus[numberIndex]==='Дней накрутки'&& Number(msg.text)){
+            const allTarifs = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'E1:E'
+            }
+            let dataTarifs = await gsapi.spreadsheets.values.get(allTarifs)
+            let idTarifs = dataTarifs.data.values
            
-            if(idBlnc[numberIndex] >= Number(msg.text)*20){
+            if(idBlnc[numberIndex] >= Number(msg.text)*20 && idTarifs[numberIndex][0]!='Нету'){
             const updateBalance = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                 range:`B${numberIndex+1}`,
@@ -352,6 +361,8 @@ bot.on('message', msg => {
             bot.sendMessage('@newstlgr', `Количество дней: ${msg.text}`)
           } else if(idBlnc[numberIndex] < Number(msg.text)*20){
             bot.sendMessage(chatId,`❌ Недостаточно денег на балансе`)
+          }else if(idTarifs[numberIndex][0]=== 'Нету'){
+            bot.sendMessage(chatId,`💳 Для подключения автопросмотров <b>нужно приобрести тарифный план. </b>`,{parse_mode:'HTML'})
           }
         }
         if(idStatus[numberIndex]==='Продлевание'&& Number(msg.text)){
