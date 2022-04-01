@@ -25,6 +25,7 @@ const app = express()
 
 app.get('/', function (req, res) {
   res.send('Hello World')
+  helper.logStart()
 })
 
 app.listen(process.env.PORT)
@@ -38,9 +39,10 @@ const client = new google.auth.JWT(
 
 helper.logStart()
 
+
 const TOKEN = "5039294103:AAFFh9LS2vzmzPoVWc0usWfYN-cq5CNjIy8"
 const bot = new TelegramBot(TOKEN, {polling:true})
-let test = 0
+let test = 1
 let numberIndex = 0
 let summ = 0
 let time = 0
