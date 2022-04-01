@@ -25,7 +25,7 @@ const app = express()
 
 app.get('/', function (req, res) {
   res.send('Hello World')
-  helper.logStart()
+  app.listen(process.env.PORT)
 })
 
 app.listen(process.env.PORT)
