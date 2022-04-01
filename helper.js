@@ -1,7 +1,8 @@
 
 module.exports = {
     logStart(){
-        console.log('bot has been')
+        console.log('node index.js')
+        
     },
     getChatId(msg) {
         return msg.chat.id
