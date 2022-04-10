@@ -25,7 +25,7 @@ const app = express()
 
 app.get('/', function (req, res) {
   res.send('Hello World')
-  app.listen(process.env.PORT)
+
 })
 
 app.listen(process.env.PORT)
@@ -137,8 +137,7 @@ bot.on('message', msg => {
             valueInputOption:'USER_ENTERED',
             resource: {values: [['Накрутка']]}
         }
-        
-           
+    
         const updateNakrAvto = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:`G${numberIndex+1}`,
@@ -151,7 +150,19 @@ bot.on('message', msg => {
             valueInputOption:'USER_ENTERED',
             resource: {values: [['Автопросмотры']]}
         }
-        
+        const sendTexts = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`G${numberIndex+1}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [['Напиши текст']]}
+        }
+        const updateGlavnya = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`G${numberIndex+1}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [['Главная']]}
+        }
+      
         const allNumberPost = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:'L1:L'
@@ -383,21 +394,94 @@ bot.on('message', msg => {
             bot.sendMessage(chatId,`✅ Автопросмотры продлены `)
         }else if(idBlnc[numberIndex] < Number(msg.text)*20){
             bot.sendMessage(chatId,`❌ Недостаточно денег на балансе`)
-          }}
+          }
+        }
 
-          if(idStatus[numberIndex]==='Количество автопросмотров'&& Number(msg.text)){
+        if(idStatus[numberIndex]==='Количество автопросмотров'&& Number(msg.text)){
              
             gsapi.spreadsheets.values.update(updateStatusAvto)
             bot.sendMessage('@newstlgr', `Количество просмотров: ${msg.text}`)
             bot.sendMessage(chatId,`✅ Количество изменено `)
         }
         
+        if(idStatus[numberIndex]==='Количество Qiwi'&& Number(msg.text)){
+          
+            if(idBlnc[numberIndex] >= Number(msg.text)*100){
+                const updateBalance = {
+                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                    range:`B${numberIndex+1}`,
+                    valueInputOption:'USER_ENTERED',
+                    resource: {values: [[idBlnc[numberIndex]-Number(msg.text)*100]]}
+                }
+            gsapi.spreadsheets.values.update(updateBalance)
+            gsapi.spreadsheets.values.update(updateGlavnya)
+            bot.sendMessage('@newstlgr', `🥝QIWI🥝\n${chatId} \nКоличество QIWI: ${msg.text}`,{parse_mode:'HTML'})
+            bot.sendMessage(chatId,`⏳<b>Ваша покупка обрабатывается</b>⏳\n\nЭто может занять до 10 минут.\n<b>Qiwi кошелек</b> будет отправлен в этот чат.\n\n<i>Если возникли трудности обратитесь в поддержку: @Zheka920 </i>`,{parse_mode:'HTML'})
+        }else if(idBlnc[numberIndex] < Number(msg.text)*100){
+            bot.sendMessage(chatId,`❌ Недостаточно денег на балансе`)
+          }
+        }
+        
+        if(idStatus[numberIndex]==='Отправка заказа'&& Number(msg.text)){
+          
+            const sendText = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:`U1`,
+                valueInputOption:'USER_ENTERED',
+                resource: {values: [[Number(msg.text)]]}
+            }
+            gsapi.spreadsheets.values.update(sendText)
+            gsapi.spreadsheets.values.update(sendTexts)
+            bot.sendMessage(chatId,`Id записан`)
+        }
+        if(idStatus[numberIndex]==='Напиши текст'&& msg.text){
+            const saveId = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'U1:U'
+            }
+            let dataIds = await gsapi.spreadsheets.values.get(saveId)
+            let idTarifs = Number(dataIds.data.values[0].flat())
+            bot.sendMessage(idTarifs,`${msg.text}`)
+            bot.sendMessage(chatId,`✉️Письмо отправлено✉️`)
+            gsapi.spreadsheets.values.update(updateGlavnya)
+        }
+   
 
    }
   
-    
- 
+
     switch (msg.text){
+        
+case 'Киви заказ':
+    client.authorize(function(err,tokens){
+        if(err){
+            console.log(err)
+            return
+        } else {
+        
+            qiwas(client)
+        
+        }
+    })
+    async function qiwas(cl){
+        const gsapi = google.sheets({version:'v4',auth: cl})
+
+        const all = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:'A1:A'
+        }
+        let data = await gsapi.spreadsheets.values.get(all)
+        let allID = data.data.values.flat().map(Number)
+        numberIndex = allID.indexOf(chatId)
+        const updateStp = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`G${numberIndex+1}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [['Отправка заказа']]}
+        }
+        gsapi.spreadsheets.values.update(updateStp)
+    }
+break
 case 'Админ подпишись на новости':
     client.authorize(function(err,tokens){
         if(err){
@@ -670,6 +754,60 @@ case kb.home.keryvannya:
 
         break 
 
+case kb.home.qiwiKosh: 
+        
+             
+            bot.sendMessage(chatId, `
+        <b>Вы можете купить 🥝 Qiwi кошелек.</b>\n\nQIWI (RU) статус <b>ОСНОВНОЙ</b>. с QVC+МИР\nЦена товара: 100.00 рублей за шт.\nВ наличии: 25шт.\n\n🥝 Qiwi кошелек - стандарт с QIWI VISA CARD.\nУпрощенная идентификация по паспорту.\nМожно принимать и переводить деньги.\n<b>Смс подтверждения транзакций ОТКЛЮЧЕНЫ.</b>\n\nАккаунты только для браузера!\nПароль на них сменить нельзя.\n\nЛимит остатка на балансе 60 000р.\nЛимит платежей в месяц 200 000р.\n\n🥝 Qiwi кошельки продаются <b>только в одни руки.</b>\n\n🔝 <b>Гарантия безопасности 100%</b>.\n
+        `,{
+            reply_markup:{ resize_keyboard: true,keyboard:keyboard.qiwiKosh},
+            parse_mode:'HTML'
+        })
+break 
+case kb.home.qiwibuy: 
+        client.authorize(function(err,tokens){
+            if(err){
+                console.log(err)
+                return
+            } else {
+            
+                qiwibuy(client)
+            
+            }
+        })
+        async function qiwibuy(cl){
+             
+            const gsapi = google.sheets({version:'v4',auth: cl})
+        
+            const all = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'A1:A'
+            }
+            let data = await gsapi.spreadsheets.values.get(all)
+            let allID = data.data.values.flat().map(Number)
+            numberIndex = allID.indexOf(chatId)
+            const allBalance = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'B1:B'
+            }
+            let dataBalance = await gsapi.spreadsheets.values.get(allBalance)
+            let idBlnc = dataBalance.data.values.flat().map(Number)
+            const updateQiwi = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:`G${numberIndex+1}`,
+                valueInputOption:'USER_ENTERED',
+                resource: {values: [['Количество Qiwi']]}
+            }
+               
+            gsapi.spreadsheets.values.update(updateQiwi)
+            
+            bot.sendMessage(chatId, `Ваш баланс позволяет приобрести <b>${Math.floor(idBlnc[numberIndex]/100)} шт.</b>\n\nВведите нужное количество:`,{
+            reply_markup:{ resize_keyboard: true,keyboard:keyboard.back},
+            parse_mode:'HTML'
+            })
+        }
+    
+break 
 case kb.home.profile:
              client.authorize(function(err,tokens){
                 if(err){
@@ -856,7 +994,7 @@ case kb.tarif.day:
             
             numberIndex = allID.indexOf(chatId)
             summ = 100
-            time = 86400
+            time = 97200
          bot.sendMessage(chatId, `
         💸 Стоимость тарифа на 1 день 100р.\n\n💰 На Вашем балансе ${idBlnc[numberIndex]} руб.\n\n Подтверждаете оплату❓
         `,{
@@ -898,7 +1036,7 @@ case kb.tarif.three:
             let dataBalance = await gsapi.spreadsheets.values.get(allBalance)
             let idBlnc = dataBalance.data.values.flat().map(Number)
             summ = 250
-            time = 259200
+            time = 270000
             numberIndex = allID.indexOf(chatId)
         bot.sendMessage(chatId, `
         💸 Стоимость тарифа на 3 дня 250р.\n\n💰 На Вашем балансе ${idBlnc[numberIndex]} руб.\n\n Подтверждаете оплату❓
@@ -936,7 +1074,7 @@ case kb.tarif.week:
             let dataBalance = await gsapi.spreadsheets.values.get(allBalance)
             let idBlnc = dataBalance.data.values.flat().map(Number)
             summ = 500
-            time = 604800
+            time = 615600
             numberIndex = allID.indexOf(chatId)
     
         bot.sendMessage(chatId, `
@@ -977,7 +1115,7 @@ case kb.tarif.month:
         
         numberIndex = allID.indexOf(chatId)
         summ = 1500 
-        time = 86400*30 
+        time = 97200*30 
         bot.sendMessage(chatId, `
         💸 Стоимость тарифа на месяць 1500р.\n\n💰 На Вашем балансе ${idBlnc[numberIndex]} руб.\n\n Подтверждаете оплату❓
         `,{

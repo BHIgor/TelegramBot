@@ -5,7 +5,7 @@ module.exports = {
      [kb.home.glaza, kb.home.podpschik],
      [kb.home.avto],
      [kb.home.tarif, kb.home.keryvannya],
-     [kb.home.profile, kb.home.instruction]
+     [kb.home.profile,kb.home.qiwiKosh, kb.home.instruction]
     ],
     tarif:[
         [kb.tarif.day, kb.tarif.three],
@@ -15,6 +15,7 @@ module.exports = {
     blockhome:[
         [kb.blockhome.kupit, kb.blockhome.proba ],
         [kb.blockhome.podpschik, kb.blockhome.tarif],
+        [kb.blockhome.qiwiKosh],
         [kb.blockhome.profile, kb.blockhome.instruction]
     ],
     profile:[
@@ -24,6 +25,10 @@ module.exports = {
     yesornot:[
         [kb.yesornot.yes,kb.back],
     
+    ],
+    qiwiKosh:[
+        [kb.home.qiwibuy],
+        [kb.back]
     ],
     back:[
         [kb.back]
