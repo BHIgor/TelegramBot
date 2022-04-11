@@ -1115,7 +1115,7 @@ case kb.tarif.month:
         
         numberIndex = allID.indexOf(chatId)
         summ = 1500 
-        time = 97200*30 
+        time = 86760*30 
         bot.sendMessage(chatId, `
         💸 Стоимость тарифа на месяць 1500р.\n\n💰 На Вашем балансе ${idBlnc[numberIndex]} руб.\n\n Подтверждаете оплату❓
         `,{
