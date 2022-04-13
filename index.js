@@ -307,7 +307,7 @@ bot.on('message', msg => {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                 range:`B${numberIndex+1}`,
                 valueInputOption:'USER_ENTERED',
-                resource: {values: [[idBlnc[numberIndex]-Number(msg.text)*0.5]]}
+                resource: {values: [[Math.floor(idBlnc[numberIndex]-Number(msg.text)*0.5)]]}
             }
             
             gsapi.spreadsheets.values.update(updateNumber)
@@ -352,7 +352,7 @@ bot.on('message', msg => {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                 range:`B${numberIndex+1}`,
                 valueInputOption:'USER_ENTERED',
-                resource: {values: [[idBlnc[numberIndex]-Number(msg.text)*0.05]]}
+                resource: {values: [[Math.floor(idBlnc[numberIndex]-Number(msg.text)*0.05)]]}
             }
             
             gsapi.spreadsheets.values.update(updateNumber)
