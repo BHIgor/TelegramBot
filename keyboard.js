@@ -30,6 +30,10 @@ module.exports = {
         [kb.home.qiwibuy],
         [kb.back]
     ],
+    podpisota:[
+        [kb.podpischik.qweek,kb.podpischik.slow],
+        [kb.back]
+    ],
     back:[
         [kb.back]
     ],

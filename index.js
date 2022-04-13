@@ -124,6 +124,12 @@ bot.on('message', msg => {
             valueInputOption:'USER_ENTERED',
             resource: {values: [['Число подписчиков']]}
         }
+        const updatePodpsmed = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`G${numberIndex+1}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [['Число подписчиков медленно']]}
+        }
         const updatePodpsDef = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:`G${numberIndex+1}`,
@@ -279,7 +285,7 @@ bot.on('message', msg => {
                     ['Подписчики',msg.chat.id,msg.text, '-',0,normalTime],
                 ]}
             }
-            bot.sendMessage('@newstlgr', `Подписчики сюда ${msg.text}`)
+            bot.sendMessage('@newstlgr', `Подписчики сюда БЫСТРЫЕ ${msg.text}`)
            
             gsapi.spreadsheets.values.append(appendOptions)
             gsapi.spreadsheets.values.update(updatePodps)
@@ -308,12 +314,57 @@ bot.on('message', msg => {
             gsapi.spreadsheets.values.update(updatePodpsDef)
             gsapi.spreadsheets.values.update(updateBalance)
             bot.sendMessage(chatId,`✅ Подписчики подключены`)
-            bot.sendMessage('@newstlgr', `Количество подписчиков: ${msg.text}`)
+            bot.sendMessage('@newstlgr', `Количество подписчиков БЫСТРЫЕ: ${msg.text}`)
           } else if(idBlnc[numberIndex] < Number(msg.text)*0.5){
             bot.sendMessage(chatId,`❌ Недостаточно денег на балансе`)
           }
         }
+        
+        if(idStatus[numberIndex]==='Подписчики медленные'&& (msg.text.includes('https')||msg.text.includes('t.me')||msg.text.includes('http')||msg.text.includes('@'))){
+            const allBalance = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'B1:B'
+            }
+            let dataBalance = await gsapi.spreadsheets.values.get(allBalance)
+            let idBlnc = dataBalance.data.values.flat().map(Number)
 
+            const appendOptions = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'I1',
+                valueInputOption:'USER_ENTERED',
+                includeValuesInResponse: true,
+                resource: {values: [
+                    ['Подписчики',msg.chat.id,msg.text, '-',0,normalTime],
+                ]}
+            }
+            bot.sendMessage('@newstlgr', `Подписчики сюда МЕДЛЕННО ${msg.text}`)
+           
+            gsapi.spreadsheets.values.append(appendOptions)
+            gsapi.spreadsheets.values.update(updatePodpsmed)
+
+            bot.sendMessage(chatId,`👥 Введи нужное количество подписчиков:\n\n Баланс позволяет накрутить <b>${Math.floor(idBlnc[numberIndex]/0.05)} подписчиков</b>`,{parse_mode: 'HTML' })
+            
+        }
+        if(idStatus[numberIndex]==='Число подписчиков медленно'&& Number(msg.text)){
+            
+            if(idBlnc[numberIndex] >= Number(msg.text)*0.05){
+            const updateBalance = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:`B${numberIndex+1}`,
+                valueInputOption:'USER_ENTERED',
+                resource: {values: [[idBlnc[numberIndex]-Number(msg.text)*0.05]]}
+            }
+            
+            gsapi.spreadsheets.values.update(updateNumber)
+            gsapi.spreadsheets.values.update(updatePodpsDef)
+            gsapi.spreadsheets.values.update(updateBalance)
+            bot.sendMessage(chatId,`✅ Подписчики подключены`)
+            bot.sendMessage('@newstlgr', `Количество подписчиков МЕДЛЕННО: ${msg.text}`)
+          } else if(idBlnc[numberIndex] < Number(msg.text)*0.05){
+            bot.sendMessage(chatId,`❌ Недостаточно денег на балансе`)
+          }
+        }
+    
         if(idStatus[numberIndex]==='Автопросмотры'&& (msg.text.includes('https')||msg.text.includes('t.me')||msg.text.includes('http')||msg.text.includes('@'))){
             
             const appendOptions = {
@@ -504,11 +555,22 @@ case 'Админ подпишись на новости':
         let allID = data.data.values.flat().map(Number)
   
     
-        allID.forEach(e =>  bot.sendMessage(e,`❗️ <b>Обновление бота</b>❗️\n\n Добавлена функция автопросмотры.\n\n🎁 Для всех пользователей доступен еще раз<b> пробный период!</b> `,{parse_mode: 'HTML'}))
+        allID.forEach(e =>  bot.sendMessage(e,`❗️ <b>ПОДПИСЧИКИ ПО 0.05р</b>❗️\n\n Добавлена накрутка подписчиков по 0.05р\n\nБолее подробно тут @glazaVtelege \n\nНачинайте тестировать💪 `,{parse_mode: 'HTML'}))
        
     }
     break
-case kb.home.podpschik: 
+
+case kb.home.podpschik:     
+    bot.sendMessage(chatId,`<b>👇 Выберите тип подписчиков 👇</b>`,{
+        reply_markup:{ resize_keyboard: true,keyboard:keyboard.podpisota},parse_mode: 'HTML'
+    })
+break
+case kb.blockhome.podpschik: 
+    bot.sendMessage(chatId,`<b>👇 Выберите тип подписчиков 👇</b>`,{
+        reply_markup:{ resize_keyboard: true,keyboard:keyboard.podpisota},parse_mode: 'HTML'
+    })      
+break
+case kb.podpischik.qweek:
             client.authorize(function(err,tokens){
                 if(err){
                     console.log(err)
@@ -537,44 +599,42 @@ case kb.home.podpschik:
             gsapi.spreadsheets.values.update(updateStp)
 
         }
-        bot.sendMessage(chatId,`<b>👥 Подписчики</b>\n\n▪️ Цена: 0.5 ₽ / 1 подписчика\n▪️ Можно на открытые и закрытые каналы, чаты и боты\n▪️ Без отписок\n\n👇 Введите ссылку на канал, чат или бот:`,{
+        bot.sendMessage(chatId,`<b>🏃‍♂️ Быстрые подписчики 🏃‍♂️</b>\n\n🔹 Цена: 0.5 ₽ / 1 подписчика\n🔹 Можно на открытые и закрытые каналы, чаты и боты\n🔹 Без отписок\n🔹 Моментальный старт\n\n👇 Введите ссылку на закрытый или открытый канал, чат:`,{
             reply_markup:{ resize_keyboard: true,keyboard:keyboard.back},parse_mode: 'HTML'
         })
-    
 break
-case kb.blockhome.podpschik: 
-            client.authorize(function(err,tokens){
-                if(err){
-                    console.log(err)
-                    return
-                } else {
-                
-                    podpschikblc(client)
-                }
-            })
-            async function podpschikblc(cl){
-                const gsapi = google.sheets({version:'v4',auth: cl})
+case kb.podpischik.slow:
+        client.authorize(function(err,tokens){
+            if(err){
+                console.log(err)
+                return
+            } else {
+            
+                podpschikslow(client)
+            }
+        })
+        async function podpschikslow(cl){
+            const gsapi = google.sheets({version:'v4',auth: cl})
 
-                const all = {
-                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
-                range:'A1:A'
-            }
-            let data = await gsapi.spreadsheets.values.get(all)
-            let allID = data.data.values.flat().map(Number)
-            numberIndex = allID.indexOf(chatId)
-            const updateStp = {
-                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
-                range:`G${numberIndex+1}`,
-                valueInputOption:'USER_ENTERED',
-                resource: {values: [['Подписчики']]}
-            }
-            gsapi.spreadsheets.values.update(updateStp)
+            const all = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:'A1:A'
+        }
+        let data = await gsapi.spreadsheets.values.get(all)
+        let allID = data.data.values.flat().map(Number)
+        numberIndex = allID.indexOf(chatId)
+        const updateStp = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`G${numberIndex+1}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [['Подписчики медленные']]}
+        }
+        gsapi.spreadsheets.values.update(updateStp)
 
         }
-        bot.sendMessage(chatId,`<b>👥 Подписчики</b>\n\n▪️ Цена: 0.5 ₽ / 1 подписчика\n▪️ Можно на открытые и закрытые каналы, чаты и боты\n▪️ Неактивные, без отписок\n\n👇 Введите ссылку на канал, чат или бот:`,{
-            reply_markup:{ resize_keyboard: true,keyboard:keyboard.back},parse_mode: 'HTML'
+        bot.sendMessage(chatId,`<b>🐌 Медленные подписчики 🐌</b>\n\n🔹 Цена: 0.05 ₽ / 1 подписчика\n🔹 Можно на открытые и закрытые каналы\n🔹 Возможны отписки\n🔹 Старт в течении часа\n\n👇 Введите ссылку на закрытый или открытый канал, чат:`,{
+        reply_markup:{ resize_keyboard: true,keyboard:keyboard.back},parse_mode: 'HTML'
         })
-    
 break
 case kb.home.glaza: 
         client.authorize(function(err,tokens){
