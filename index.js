@@ -679,7 +679,6 @@ case kb.home.glaza:
             }
             
         }
-       
         break 
 case kb.home.avto: 
         client.authorize(function(err,tokens){
