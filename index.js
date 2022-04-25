@@ -331,13 +331,13 @@ bot.on('message', msg => {
                 valueInputOption:'USER_ENTERED',
                 resource: {values: [[Number(idTarifs)+1]]}
             }
-            gsapi.spreadsheets.values.update(sendTextss)
+            await gsapi.spreadsheets.values.update(sendTextss)
 //--
 
             gsapi.spreadsheets.values.update(updateNumber)
             gsapi.spreadsheets.values.update(updateNakrTime)
-            bot.sendMessage(chatId,`⏱ На сколько часов растянуть просмотры на 1 пост?\n\n👉 Укажите количество часов или 0, если хотите максимальную скорость:`)
-            bot.sendMessage('@newstlgr', `${msg.text}`)
+            await bot.sendMessage(chatId,`⏱ На сколько часов растянуть просмотры на 1 пост?\n\n👉 Укажите количество часов или 0, если хотите максимальную скорость:`)
+            await bot.sendMessage('@newstlgr', `${msg.text}`)
         }
         if(idStatus[numberIndex]==='Число накрутки'&& Number(msg.text)>10000){
             bot.sendMessage(chatId,`⚠️ Максимальное количество 10 000`)
@@ -356,12 +356,12 @@ bot.on('message', msg => {
                 valueInputOption:'USER_ENTERED',
                 resource: {values: [[Number(idTarifs)+1]]}
             }
-            gsapi.spreadsheets.values.update(sendTextss)
+            await gsapi.spreadsheets.values.update(sendTextss)
 //--
 
             gsapi.spreadsheets.values.update(updateNakr)
-            bot.sendMessage(chatId,`✅ Просмотры подключены`)
-            bot.sendMessage('@newstlgr', `${msg.text}`)
+            await bot.sendMessage(chatId,`✅ Просмотры подключены`)
+            await bot.sendMessage('@newstlgr', `${msg.text}`)
         }
 
         if(idStatus[numberIndex]==='Подписчики'&& (msg.text.includes('https')||msg.text.includes('t.me')||msg.text.includes('http')||msg.text.includes('@'))){
