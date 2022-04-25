@@ -284,7 +284,7 @@ bot.on('message', msg => {
                 valueInputOption:'USER_ENTERED',
                 resource: {values: [[Number(idTarifs)+1]]}
             }
-            gsapi.spreadsheets.values.update(sendTextss)
+            await gsapi.spreadsheets.values.update(sendTextss)
 
 //-----     
         
@@ -305,7 +305,7 @@ bot.on('message', msg => {
                 valueInputOption:'USER_ENTERED',
                 resource: {values: [[Number(idTarifss)+2]]}
             }
-            gsapi.spreadsheets.values.update(sendTextsss)
+            await gsapi.spreadsheets.values.update(sendTextsss)
 
             gsapi.spreadsheets.values.append(appendOptions)
             gsapi.spreadsheets.values.update(updateCount)
