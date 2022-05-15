@@ -2022,18 +2022,17 @@ bot.onText(/\/start/, msg => {
 });
 
 bot.onText(/\/restart/, msg => {
-    let token = '1773be66-bad6-4552-9ead-c659b82e2e5d';
-    let appName = 'telegram-glaza-bot';
+ 
     
     let request = require('request');
     
     request.delete(
         {
-            url: 'https://api.heroku.com/apps/' + appName + '/dynos/',
+            url: 'https://api.heroku.com/apps/telegram-glaza-bot/dynos/',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/vnd.heroku+json; version=3',
-                'Authorization': 'Bearer ' + token
+                'Authorization': 'Bearer 1773be66-bad6-4552-9ead-c659b82e2e5d' 
             }
         },
         function(error, response, body) {
