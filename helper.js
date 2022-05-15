@@ -8,20 +8,11 @@ var request = require('request');
 module.exports = {
     logStart(){
         console.log('bot has been')    
-        request.delete(
-            {
-                url: 'https://api.heroku.com/apps/' + appName + '/dynos/' + dynoName,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/vnd.heroku+json; version=3',
-                    'Authorization': 'Bearer ' + token
-                }
-            },
-            function(error, response, body) {
-                // Do stuff
-            }
-        );
+        var heroku = new Heroku({ token: token });
+    heroku .delete('/apps/' + appName + '/dynos/' + dynoName)
+           .then( x => console.log(x) );
     },
+    
     getChatId(msg) {
         return msg.chat.id
     }
