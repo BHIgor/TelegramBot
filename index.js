@@ -38,7 +38,6 @@ const client = new google.auth.JWT(
 
 helper.logStart()
 
-
 const TOKEN = "5039294103:AAFFh9LS2vzmzPoVWc0usWfYN-cq5CNjIy8"
 const bot = new TelegramBot(TOKEN, {polling:true})
 let test = 1
@@ -54,6 +53,7 @@ bot.on('message', msg => {
     client.authorize(function(err,tokens){
         if(err){
             console.log(err)
+      
             return
         } else {
           
@@ -1565,7 +1565,9 @@ case kb.back:
  
     client.authorize(function(err,tokens){
         if(err){
+           
             console.log(err)
+      
             return
         } else {
           
@@ -2018,5 +2020,26 @@ bot.onText(/\/start/, msg => {
     }
   
 });
+
+bot.onText(/\/restart/, msg => {
+    let token = '1773be66-bad6-4552-9ead-c659b82e2e5d';
+    let appName = 'telegram-glaza-bot';
+    
+    let request = require('request');
+    
+    request.delete(
+        {
+            url: 'https://api.heroku.com/apps/' + appName + '/dynos/',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/vnd.heroku+json; version=3',
+                'Authorization': 'Bearer ' + token
+            }
+        },
+        function(error, response, body) {
+            // Do stuff
+        }
+    );
+})
 
 
