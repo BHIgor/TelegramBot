@@ -3,13 +3,14 @@ var appName = 'telegram-glaza-bot';
 var dynoName = 'web.1';
 
 var request = require('request');
-
+const Heroku = require('heroku-client')
+const heroku = new Heroku({ token: process.env.HEROKU_API_TOKEN })
 
 module.exports = {
     logStart(){
         console.log('bot has been')    
-        var heroku = new Heroku({ token: token });
-    heroku .delete('/apps/' + appName + '/dynos/' + dynoName)
+        
+    heroku.delete('/apps/' + appName + '/dynos/' + dynoName)
            .then( x => console.log(x) );
     },
     
