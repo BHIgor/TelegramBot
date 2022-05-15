@@ -51,7 +51,6 @@ let time = 0
 bot.on('message', msg => {
     const chatId = helper.getChatId(msg)
    
-    
     client.authorize(function(err,tokens){
         if(err){
             console.log(err)
@@ -65,7 +64,7 @@ bot.on('message', msg => {
     async function status(cl){
      
         const publicKey = '48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iPyVXeQ7k1CmVN3LeuRPFHNEVECeqUZRYkspJKKndxy37sZGuDxYiozW4B7MZa1ca5EnJkFpsRUEfLqxScwGE2XphFFkAZm7mXmAgsjdXvP'
-     
+    
         const params = {
             publicKey,
             amount:  Number(msg.text),
@@ -80,7 +79,7 @@ bot.on('message', msg => {
         };
         const link = qiwiApi.createPaymentForm(params);
         const linkCard = qiwiApi.createPaymentForm(paramsCard);
-        
+
         const gsapi = google.sheets({version:'v4',auth: cl})
 
         const all = {
@@ -261,7 +260,7 @@ bot.on('message', msg => {
   
         if(msg.forward_from_chat && idStatus[numberIndex]==='Накрутка' && msg.media_group_id === undefined){
             let idChannel = String(msg.forward_from_chat.id).substring(4)
-     
+          
             const appendOptions = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                 range:'I1',
@@ -1563,7 +1562,7 @@ break
 
 //-------------------------
 case kb.back:
-
+ 
     client.authorize(function(err,tokens){
         if(err){
             console.log(err)
@@ -1574,6 +1573,9 @@ case kb.back:
         }
     })
     async function saveBack(cl){
+      
+    
+
         const gsapi = google.sheets({version:'v4',auth: cl})
         const all = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -1610,8 +1612,9 @@ case kb.back:
                
             }
             }
-  
-        break           
+            
+        break    
+
     }
 })
 

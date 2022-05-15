@@ -17,6 +17,7 @@
     "global-tunnel": "^1.2.0",
     "google-spreadsheet": "^3.2.0",
     "googleapis": "^39.2.0",
+    "heroku-client": "^3.1.0",
     "node-telegram-bot-api": "^0.56.0",
     "request": "^2.88.2",
     "socks5-https-client": "^1.2.1",
