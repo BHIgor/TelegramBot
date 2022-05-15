@@ -2023,22 +2023,12 @@ bot.onText(/\/start/, msg => {
 
 bot.onText(/\/restart/, msg => {
  
+    const Heroku = require('heroku-client')
+const heroku = new Heroku({ token: process.env.HEROKU_API_TOKEN })
     
-    let request = require('request');
-    
-    request.delete(
-        {
-            url: 'https://api.heroku.com/apps/telegram-glaza-bot/dynos/',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/vnd.heroku+json; version=3',
-                'Authorization': 'Bearer 1773be66-bad6-4552-9ead-c659b82e2e5d' 
-            }
-        },
-        function(error, response, body) {
-            // Do stuff
-        }
-    );
+
+heroku.delete('/apps/telegram-glaza-bot/dynos/')
+       .then( x => console.log(x) );
 })
 
 
