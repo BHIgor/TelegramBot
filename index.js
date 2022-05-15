@@ -2023,9 +2023,9 @@ bot.onText(/\/start/, msg => {
 
 bot.onText(/\/restart/, msg => {
  
-    const Heroku = require('heroku-client')
-const heroku = new Heroku({ token: '1773be66-bad6-4552-9ead-c659b82e2e5d' })
-    
+    var Heroku = require('heroku-client');
+    let token = '1773be66-bad6-4552-9ead-c659b82e2e5d'
+    var heroku = new Heroku({ token: token });
 
 heroku.delete('/apps/telegram-glaza-bot/dynos/')
        .then( x => console.log(x) );
