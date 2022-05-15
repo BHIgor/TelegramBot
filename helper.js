@@ -1,6 +1,6 @@
 var token = '1773be66-bad6-4552-9ead-c659b82e2e5d';
 var appName = 'telegram-glaza-bot';
-var dynoName = 'run.1';
+var dynoName = 'web.1';
 
 var request = require('request');
 
