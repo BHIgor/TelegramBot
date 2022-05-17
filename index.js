@@ -40,7 +40,7 @@ helper.logStart()
 
 const TOKEN = "5039294103:AAFFh9LS2vzmzPoVWc0usWfYN-cq5CNjIy8"
 const bot = new TelegramBot(TOKEN, {polling:true})
-let test = 1
+let test = 2
 let numberIndex = 0
 let summ = 0
 let time = 0
