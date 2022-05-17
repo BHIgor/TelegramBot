@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "pm2-runtime start ecosystem.config.js --env production"
   },
   "engines": {
     "node": "16.13.1"
