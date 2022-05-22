@@ -96,7 +96,7 @@ app.post('/api', function (req, res) {
         }
     })
     async function zapros(cl){
-        
+        if(req.body.bill.status.value === 'PAID'){
     const gsapi = google.sheets({version:'v4',auth: cl})
     const all = {
         spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -106,11 +106,18 @@ app.post('/api', function (req, res) {
     let allID = data.data.values.flat().map(Number)
     numberIndex = allID.indexOf(Number(req.body.bill.billId))+1
 
+    const idOneBalance = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:`B${numberIndex}`
+    }
+    let dataOneBalance =  await gsapi.spreadsheets.values.get(idOneBalance)
+    let allIDOneBalance = dataOneBalance.data.values.flat().map(Number)[0]
+
     const finallyoplata = {
         spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
         range:`B${numberIndex}`,
         valueInputOption:'USER_ENTERED',
-        resource: {values: [[Number(req.body.bill.amount.value)]]}
+        resource: {values: [[Number(allIDOneBalance) + Number(req.body.bill.amount.value)]]}
     }
     gsapi.spreadsheets.values.update(finallyoplata)
 
@@ -121,9 +128,20 @@ app.post('/api', function (req, res) {
     let dataOne =  await gsapi.spreadsheets.values.get(idOne)
     let allIDOne = dataOne.data.values.flat().map(Number)[0]
     bot.sendMessage(allIDOne,`Ваш баланс пополнен на ${Number(req.body.bill.amount.value)}р.`)
+    bot.sendMessage('@newstlgr',`✅Баланс пополнен на ${Number(req.body.bill.amount.value)}р.✅`)
 
-    console.log(allIDOne)
-        console.log(req.body)
+    const defId = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:`W${numberIndex}`,
+        valueInputOption:'USER_ENTERED',
+        resource: {values: [[0]]}
+    }
+    gsapi.spreadsheets.values.update(defId)
+    }else{
+        console.log('errorssss')
+    }
+   
+     
         
     }
   })
