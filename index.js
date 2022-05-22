@@ -2,30 +2,66 @@ const TelegramBot = require('node-telegram-bot-api')
 const kb = require('./keyboard-buttons')
 const keyboard = require('./keyboard')
 const helper = require('./helper')
+const http = require('http')
+const url = require('url')
+
 const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
 const SECRET_KEY = 'eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6ImVmdXJtOC0wMCIsInVzZXJfaWQiOiIzODA2MzgxOTM0MDAiLCJzZWNyZXQiOiJhNTJjNTVjOWUwM2Y5OTU3ZGZiMDE2NTZkZWI5MTc1NzI4NDE5NDk1ODI3ZGM1YWMxMTczNzE3NzI1NmQ4YzYzIn19';
 const qiwiApi = new QiwiBillPaymentsAPI(SECRET_KEY);
 
 const { Api, TelegramClient } = require("telegram");
 const { StringSession } = require("telegram/sessions");
-/*
-const apiId = 9950159;
-const apiHash = "b14f3786098d5dd8e9899797dec42bf2";
-const session = new StringSession("1AgAOMTQ5LjE1NC4xNjcuNTABu2kEZYPC1U2z6ga2nbUg7CjeLui+IZNzqZ1Q8eC9shDShfPiN5zTqtvXHD6oxERlcs+YDLPPATNeBJ1MofTTH3HBPqMf54UhIm2XS0o9mCM87egutVRxVjoh76g1snbB7gbtSD2rtGLnO5yOBKGQAl1NM0lb5EFA43K+QSzyVyiSyVkbJWT7VEgMNm2LVTqQdESm+TJtmaMeY/J6w5cqGVmL62Cwpv65/W9+pFw/QuvKxYcrm54Vx0+jvi7Fl29IyOM19bMJkyPzmEahWMcL47u2/XsctB3W1UwBNX4g6AMFIhL/GFF61Gxs2In9wyg4v/EbgR3kkkXXswf9/caryjg="); // You should put your string session here
-const clientApi = new TelegramClient(session, apiId, apiHash, {});
-*/
+const input = require("input"); // npm i input
+
+const apiId = 15691327;
+const apiHash = "bfcec4ca32e06e826c189d1e0b369f95";
+
+const stringSession = new StringSession("1AgAOMTQ5LjE1NC4xNjcuNTABu2D1YREGzM199DkX5FD3aIq9brjmiE/G9LQet9m7l5Y5H6AtcSiclFQLTI2B77dwqDJnJMFzUbEVst2sppPtf3aRcry0KBj94aWckfzSvtpT6EfTtCT6mbT8ItfwgtvRZgwEiR1QtJbKCqJuqM6rA/eY7/fLY3eK5zJICkcxiGAMM+kffdc50yxbNJ27FwTLC/HYI5IKFdH/U20q8WTWlO+3sL18eBDxaLFx8KeSPK2R+4tOZxhyxK1VHEXPvy+JPdvRNtODlOmpZ/r6EMahwo9e/2u2sYULt7Ar1Sazc6XQV9Xp95cFcJs+aEQ1bo3C49hDfNH2TQztB1iIj8pg57w="); // fill this later with the value from session.save()
+const clientApi = new TelegramClient(stringSession, apiId, apiHash, {
+    connectionRetries: 5,
+  });
+(async () => {
+  console.log("Loading interactive example...");
+ 
+  await clientApi.start({
+    phoneNumber: async () => await input.text("Please enter your number: "),
+    password: async () => await input.text("Please enter your password: "),
+    phoneCode: async () =>
+      await input.text("Please enter the code you received: "),
+    onError: (err) => console.log(err),
+  });
+  console.log("You should now be connected.");
+
+  await clientApi.sendMessage("me", { message: "Hello!" });
+})();
+
+
 
 const {google} = require('googleapis')
 const keys = require('./credentials.json');
 const { chat } = require('googleapis/build/src/apis/chat');
 
-const express = require('express')
+const express = require('express');
+const { getRandomInt, generateRandomBigInt } = require('telegram/Helpers');
 const app = express()
+
 
 app.get('/', function (req, res) {
   res.send('Hello World')
 
 })
+
+app.post('/', function (req, res) {
+
+    let body = ''
+    req.on('data', chunk =>{
+        body += chunk.toString()
+    })
+    req.on('end',() => {
+        console.log(req.on('data'))
+    })
+  })
+
 
 app.listen(process.env.PORT)
 
@@ -48,6 +84,8 @@ let time = 0
 
 
 bot.on('message', msg => {
+
+   
     const chatId = helper.getChatId(msg)
    
     client.authorize(function(err,tokens){
@@ -286,7 +324,7 @@ bot.on('message', msg => {
             await gsapi.spreadsheets.values.update(sendTextss)
 
 //-----     
-        
+            
             await bot.forwardMessage('@newstlgr',chatId, msg.message_id).then(function(){}) 
 
             const saveIdss = {
@@ -295,6 +333,24 @@ bot.on('message', msg => {
             }
             let dataIdss = await gsapi.spreadsheets.values.get(saveIdss)
             let idTarifss = Number(dataIdss.data.values[0].flat())
+
+             
+            async function runss() {
+
+                const result = await clientApi.invoke(
+                new Api.messages.ForwardMessages({
+                    fromPeer: "newstlgr",
+                    id: [idTarifss],
+                    randomId: [generateRandomBigInt(1,100000)],
+                    toPeer: "telemnogocombot",
+                    withMyScore: true,
+                    scheduleDate: 43,
+                })
+                );
+            
+            };
+            runss() 
+
             await bot.sendMessage('@newstlgr', `👀 Просмотры`)
             await bot.sendMessage('@newstlgr', `https://t.me/newstlgr/${idTarifss}`)
 
@@ -332,11 +388,27 @@ bot.on('message', msg => {
             }
             await gsapi.spreadsheets.values.update(sendTextss)
 //--
-
+                 
+            
             gsapi.spreadsheets.values.update(updateNumber)
             gsapi.spreadsheets.values.update(updateNakrTime)
             await bot.sendMessage(chatId,`⏱ На сколько часов растянуть просмотры на 1 пост?\n\n👉 Укажите количество часов или 0, если хотите максимальную скорость:`)
             await bot.sendMessage('@newstlgr', `${msg.text}`)
+            async function runsos() {
+
+                const result = await clientApi.invoke(
+                new Api.messages.ForwardMessages({
+                    fromPeer: "newstlgr",
+                    id: [idTarifs+1],
+                    randomId: [generateRandomBigInt(1,100000)],
+                    toPeer: "telemnogocombot",
+                    withMyScore: true,
+                    scheduleDate: 43,
+                })
+                );
+
+            };
+            runsos()
         }
         if(idStatus[numberIndex]==='Число накрутки'&& Number(msg.text)>10000){
             bot.sendMessage(chatId,`⚠️ Максимальное количество 10 000`)
@@ -357,10 +429,25 @@ bot.on('message', msg => {
             }
             await gsapi.spreadsheets.values.update(sendTextss)
 //--
-
+            
             gsapi.spreadsheets.values.update(updateNakr)
             await bot.sendMessage(chatId,`✅ Просмотры подключены`)
             await bot.sendMessage('@newstlgr', `${msg.text}`)
+            async function runss() {
+
+                const result = await clientApi.invoke(
+                new Api.messages.ForwardMessages({
+                    fromPeer: "newstlgr",
+                    id: [idTarifs+1],
+                    randomId: [generateRandomBigInt(1,100000)],
+                    toPeer: "telemnogocombot",
+                    withMyScore: true,
+                    scheduleDate: 43,
+                })
+                );
+
+            };
+            runss()
         }
 
         if(idStatus[numberIndex]==='Подписчики'&& (msg.text.includes('https')||msg.text.includes('t.me')||msg.text.includes('http')||msg.text.includes('@'))){
