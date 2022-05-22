@@ -6,7 +6,7 @@ const http = require('http')
 const url = require('url')
 
 const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
-const SECRET_KEY = 'eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6ImVmdXJtOC0wMCIsInVzZXJfaWQiOiIzODA2MzgxOTM0MDAiLCJzZWNyZXQiOiJhNTJjNTVjOWUwM2Y5OTU3ZGZiMDE2NTZkZWI5MTc1NzI4NDE5NDk1ODI3ZGM1YWMxMTczNzE3NzI1NmQ4YzYzIn19';
+const SECRET_KEY = 'eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6InhheXExbS0wMCIsInVzZXJfaWQiOiI3OTUzMjIzNjY1OCIsInNlY3JldCI6ImE1NTJmMWQwMzM5Zjc4ZWM0NjdjNDVkNTI5YWE5NzQ0ZWI2ZmI2Mzc4MThkNDI3NjU4MTcxN2I1YzAwNDUxODQifX0=';
 const qiwiApi = new QiwiBillPaymentsAPI(SECRET_KEY);
 
 const { Api, TelegramClient } = require("telegram");
@@ -16,7 +16,7 @@ const input = require("input"); // npm i input
 const apiId = 15691327;
 const apiHash = "bfcec4ca32e06e826c189d1e0b369f95";
 
-const stringSession = new StringSession("1AgAOMTQ5LjE1NC4xNjcuNTABu2D1YREGzM199DkX5FD3aIq9brjmiE/G9LQet9m7l5Y5H6AtcSiclFQLTI2B77dwqDJnJMFzUbEVst2sppPtf3aRcry0KBj94aWckfzSvtpT6EfTtCT6mbT8ItfwgtvRZgwEiR1QtJbKCqJuqM6rA/eY7/fLY3eK5zJICkcxiGAMM+kffdc50yxbNJ27FwTLC/HYI5IKFdH/U20q8WTWlO+3sL18eBDxaLFx8KeSPK2R+4tOZxhyxK1VHEXPvy+JPdvRNtODlOmpZ/r6EMahwo9e/2u2sYULt7Ar1Sazc6XQV9Xp95cFcJs+aEQ1bo3C49hDfNH2TQztB1iIj8pg57w="); // fill this later with the value from session.save()
+const stringSession = new StringSession("1AgAOMTQ5LjE1NC4xNjcuNTABuwYi0EVDoHhO4Wr7NrBd0Tz0YmUOrIiSDFc3OJ9jtOyZkN2zbwBvMy8rkqvWrx7mkDuyxc7gyJ0gnJlnA+07QxGvlkMLrN7TYAAlFAm+1Yx0Q09pLLq0o9+ZXCmHz/i0yVnHlCnuZQkH9QxD9irz3JDbIbT1UGbQuZnhTlpZCzviNwjXuRGcYgopqXiHN772lfkCk7HmNOj5ZHSKEbTqcg676C60+GmFaN8dMaCTtnNSopx5LuR5jNC9xYVJ/ivJcuelO7jVoie2EegAjTUpueFTKogNBgbEirwf3g2qcM2I5Izr7L4eOUyDk7ItlxSDqtoUeDwuhbwj4eJ2+mQ+1is="); // fill this later with the value from session.save()
 const clientApi = new TelegramClient(stringSession, apiId, apiHash, {
     connectionRetries: 5,
   });
@@ -31,7 +31,7 @@ const clientApi = new TelegramClient(stringSession, apiId, apiHash, {
     onError: (err) => console.log(err),
   });
   console.log("You should now be connected.");
-
+  console.log(clientApi.session.save());
   await clientApi.sendMessage("me", { message: "Hello!" });
 })();
 
@@ -44,27 +44,28 @@ const { chat } = require('googleapis/build/src/apis/chat');
 const express = require('express');
 const { getRandomInt, generateRandomBigInt } = require('telegram/Helpers');
 const app = express()
+const setup = {port:8000}
 
+
+// Слушаем порт и при запуске сервера сообщаем
+app.listen(setup.port, () => {
+  console.log('Сервер: порт %s - старт!', setup.port);
+});
+const bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({
+    extended: true,
+}))
+app.use(bodyParser.json())
 
 app.get('/', function (req, res) {
   res.send('Hello World')
 
 })
 
-app.post('/', function (req, res) {
-
-    let body = ''
-    req.on('data', chunk =>{
-        body += chunk.toString()
-    })
-    req.on('end',() => {
-        console.log(req.on('data'))
-    })
-  })
 
 
 app.listen(process.env.PORT)
-
+//process.env.PORT
 const client = new google.auth.JWT(
     keys.client_email,
     null,
@@ -73,13 +74,59 @@ const client = new google.auth.JWT(
 )
 
 helper.logStart()
-
+//pm2 start index.js --deep-monitoring --attach
 const TOKEN = "5039294103:AAFFh9LS2vzmzPoVWc0usWfYN-cq5CNjIy8"
 const bot = new TelegramBot(TOKEN, {polling:true})
 let test = 2
 let numberIndex = 0
 let summ = 0
 let time = 0
+
+
+app.post('/api', function (req, res) {
+    client.authorize(function(err,tokens){
+        if(err){
+            console.log(err)
+      
+            return
+        } else {
+          
+            zapros(client)
+        
+        }
+    })
+    async function zapros(cl){
+        
+    const gsapi = google.sheets({version:'v4',auth: cl})
+    const all = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:'W1:W'
+    }
+    let data =  await gsapi.spreadsheets.values.get(all)
+    let allID = data.data.values.flat().map(Number)
+    numberIndex = allID.indexOf(Number(req.body.bill.billId))+1
+
+    const finallyoplata = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:`B${numberIndex}`,
+        valueInputOption:'USER_ENTERED',
+        resource: {values: [[Number(req.body.bill.amount.value)]]}
+    }
+    gsapi.spreadsheets.values.update(finallyoplata)
+
+    const idOne = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:`A${numberIndex}`
+    }
+    let dataOne =  await gsapi.spreadsheets.values.get(idOne)
+    let allIDOne = dataOne.data.values.flat().map(Number)[0]
+    bot.sendMessage(allIDOne,`Ваш баланс пополнен на ${Number(req.body.bill.amount.value)}р.`)
+
+    console.log(allIDOne)
+        console.log(req.body)
+        
+    }
+  })
 
 
 
@@ -101,24 +148,9 @@ bot.on('message', msg => {
     })
     async function status(cl){
      
-        const publicKey = '48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iPyVXeQ7k1CmVN3LeuRPFHNEVECeqUZRYkspJKKndxy37sZGuDxYiozW4B7MZa1ca5EnJkFpsRUEfLqxScwGE2XphFFkAZm7mXmAgsjdXvP'
-    
-        const params = {
-            publicKey,
-            amount:  Number(msg.text),
-            comment:chatId,
-            paySource:'qw',
-        };
-        const paramsCard = {
-            publicKey,
-            amount:  Number(msg.text),
-            comment:chatId,
-            paySource:'card'
-        };
-        const link = qiwiApi.createPaymentForm(params);
-        const linkCard = qiwiApi.createPaymentForm(paramsCard);
-
+      
         const gsapi = google.sheets({version:'v4',auth: cl})
+       
 
         const all = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -253,7 +285,42 @@ bot.on('message', msg => {
         
      
         if(idStatus[numberIndex]==='Оплата'&& Number(msg.text)){
+            const publicKey = '48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iPyVXeQ7k1CmVN3LeuRPFHNEVECeqUZRYkspJKKndxy37sZGuDxYio6RdVFJSYqWViQvE7cH7EdNe9Bv2ENW1PboQ3tfbjBNaBuegVJTGwr'
+            let billid =  Math.floor(Math.random() * (10000000 - 1) + 1)
+              const params = {
+                  publicKey,
+                  amount:  Number(msg.text),
+                  billId: billid,
+                  comment:chatId,
+                  paySource:'qw',
+              };
+              const paramsCard = {
+                  publicKey,
+                  amount:  Number(msg.text),
+                  billId: billid,
+                  comment:chatId,
+                  paySource:'card'
+              };
+              const link = qiwiApi.createPaymentForm(params);
+              const linkCard = qiwiApi.createPaymentForm(paramsCard);
+              
+              
+        const all = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:'A1:A'
+        }
+        let data = await gsapi.spreadsheets.values.get(all)
+        let allID = data.data.values.flat().map(Number)
+        numberIndex = allID.indexOf(chatId)
+        const updateBalanceOplata = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`W${numberIndex+1}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [[billid]]}
+        }
+            gsapi.spreadsheets.values.update(updateBalanceOplata)
             gsapi.spreadsheets.values.update(updateBalance)
+
                   //--
                   const saveIds = {
                     spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
