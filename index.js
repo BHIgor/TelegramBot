@@ -137,6 +137,21 @@ app.post('/api', function (req, res) {
         resource: {values: [[0]]}
     }
     gsapi.spreadsheets.values.update(defId)
+    //---
+    const saveIds = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:'V1:V'
+    }
+    let dataIds = await gsapi.spreadsheets.values.get(saveIds)
+    let idTarifs = Number(dataIds.data.values[0].flat())
+    const sendTextss = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:`V1`,
+        valueInputOption:'USER_ENTERED',
+        resource: {values: [[Number(idTarifs)+1]]}
+    }
+    await gsapi.spreadsheets.values.update(sendTextss)
+    //--
     }else{
         console.log('errorssss')
     }
