@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "pm2 start index.js --deep-monitoring --attach"
+    "start": "node index.js"
   },
   "engines": {
     "node": "16.13.1"
@@ -14,10 +14,12 @@
   "dependencies": {
     "@qiwi/bill-payments-node-js-sdk": "^3.2.1",
     "express": "^4.17.2",
+    "freekassa-node": "^2.0.0",
     "global-tunnel": "^1.2.0",
     "google-spreadsheet": "^3.2.0",
     "googleapis": "^39.2.0",
     "heroku-client": "^3.1.0",
+    "input": "^1.0.1",
     "node-telegram-bot-api": "^0.56.0",
     "request": "^2.88.2",
     "socks5-https-client": "^1.2.1",

@@ -4,7 +4,7 @@ const keyboard = require('./keyboard')
 const helper = require('./helper')
 const http = require('http')
 const url = require('url')
-
+const freekassa = require("freekassa-node");
 const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
 const SECRET_KEY = 'eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6InhheXExbS0wMCIsInVzZXJfaWQiOiI3OTUzMjIzNjY1OCIsInNlY3JldCI6ImE1NTJmMWQwMzM5Zjc4ZWM0NjdjNDVkNTI5YWE5NzQ0ZWI2ZmI2Mzc4MThkNDI3NjU4MTcxN2I1YzAwNDUxODQifX0=';
 const qiwiApi = new QiwiBillPaymentsAPI(SECRET_KEY);
@@ -20,7 +20,7 @@ const stringSession = new StringSession("1AgAOMTQ5LjE1NC4xNjcuNTABuwYi0EVDoHhO4W
 const clientApi = new TelegramClient(stringSession, apiId, apiHash, {
     connectionRetries: 5,
   });
-(async () => {
+/*(async () => {
   console.log("Loading interactive example...");
  
   await clientApi.start({
@@ -33,7 +33,7 @@ const clientApi = new TelegramClient(stringSession, apiId, apiHash, {
   console.log("You should now be connected.");
   console.log(clientApi.session.save());
   await clientApi.sendMessage("me", { message: "Hello!" });
-})();
+})();*/
 
 
 
@@ -61,7 +61,14 @@ app.get('/', function (req, res) {
   res.send('Hello World')
 
 })
-
+app.get('/good', function (req, res) {
+    res.send('Оплата прошла успешно')
+  
+  })
+app.get('/bad', function (req, res) {
+    res.send('Оплата не прошла!')
+  
+  })    
 
 
 app.listen(process.env.PORT)
@@ -75,13 +82,86 @@ const client = new google.auth.JWT(
 
 helper.logStart()
 //pm2 start index.js --deep-monitoring --attach
-const TOKEN = "5039294103:AAFFh9LS2vzmzPoVWc0usWfYN-cq5CNjIy8"
+const TOKEN = "5205903461:AAEahGqovkU3L53jAl5OA7Z4kEw_P5kRJvs"
 const bot = new TelegramBot(TOKEN, {polling:true})
 let test = 2
 let numberIndex = 0
 let summ = 0
 let time = 0
 
+app.post('/apiCassa', function (req, res) {
+    console.log(req.body)
+    client.authorize(function(err,tokens){
+        if(err){
+            console.log(err)
+      
+            return
+        } else {
+          
+            zapros(client)
+        
+        }
+    })
+    async function zapros(cl){
+       
+    const gsapi = google.sheets({version:'v4',auth: cl})
+    const all = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:'W1:W'
+    }
+    let data =  await gsapi.spreadsheets.values.get(all)
+    let allID = data.data.values.flat().map(Number)
+    numberIndex = allID.indexOf(Number(req.body.MERCHANT_ORDER_ID))+1
+
+    const idOneBalance = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:`B${numberIndex}`
+    }
+    let dataOneBalance =  await gsapi.spreadsheets.values.get(idOneBalance)
+    let allIDOneBalance = dataOneBalance.data.values.flat().map(Number)[0]
+
+    const finallyoplata = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:`B${numberIndex}`,
+        valueInputOption:'USER_ENTERED',
+        resource: {values: [[Number(allIDOneBalance) + Number(req.body.AMOUNT)]]}
+    }
+    gsapi.spreadsheets.values.update(finallyoplata)
+
+    const idOne = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:`A${numberIndex}`
+    }
+    let dataOne =  await gsapi.spreadsheets.values.get(idOne)
+    let allIDOne = dataOne.data.values.flat().map(Number)[0]
+    bot.sendMessage(allIDOne,`Ваш баланс пополнен на ${Number(req.body.AMOUNT)}р.`)
+    bot.sendMessage('@newstlgr',`✅Баланс пополнен на ${Number(req.body.AMOUNT)}р. FREECASSA✅`)
+
+    const defId = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:`W${numberIndex}`,
+        valueInputOption:'USER_ENTERED',
+        resource: {values: [[0]]}
+    }
+    gsapi.spreadsheets.values.update(defId)
+    //---
+    const saveIds = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:'V1:V'
+    }
+    let dataIds = await gsapi.spreadsheets.values.get(saveIds)
+    let idTarifs = Number(dataIds.data.values[0].flat())
+    const sendTextss = {
+        spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+        range:`V1`,
+        valueInputOption:'USER_ENTERED',
+        resource: {values: [[Number(idTarifs)+1]]}
+    }
+    await gsapi.spreadsheets.values.update(sendTextss)
+    //--
+    }
+    
+})
 
 app.post('/api', function (req, res) {
     client.authorize(function(err,tokens){
@@ -257,6 +337,13 @@ bot.on('message', msg => {
             valueInputOption:'USER_ENTERED',
             resource: {values: [['Дней накрутки']]}
         }
+        
+        const rastyantAvto = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            range:`G${numberIndex+1}`,
+            valueInputOption:'USER_ENTERED',
+            resource: {values: [['Число растянуть']]}
+        }
         const updateStatusAvto = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:`G${numberIndex+1}`,
@@ -381,9 +468,32 @@ bot.on('message', msg => {
                         ],
                         [
                             { 
-                                text:'💳 VISA/MASTERCARD',
+                                text:'💳 VISA/MASTERCARD RUB',
                                 callback_data:'no',
                                 url:linkCard
+                            }
+                 
+                        ],
+                        [
+                            { 
+                                text:'💳 VISA/MASTERCARD UAH',
+                                callback_data:'uah',
+                            }
+                 
+                        ],
+                        [
+                            { 
+                                text:'⚒ Другие способы',
+                                callback_data:'other',
+                                url: freekassa(
+                                    {
+                                        oa: `${Number(msg.text)}`,
+                                        o: `${billid}`,
+                                        m: "17244",
+                                        currency: "RUB",
+                                      },
+                                      "luiz23"
+                                ).url
                             }
                  
                         ]]
@@ -750,8 +860,8 @@ bot.on('message', msg => {
             let idBlnc = dataBalance.data.values.flat().map(Number)
          
             gsapi.spreadsheets.values.update(updateNumberAvto)
-            gsapi.spreadsheets.values.update(updateNakrAvto)
-            bot.sendMessage(chatId,`⏳ Введите количество дней:\n\n Баланс позволяет продлить на <b>${Math.floor(idBlnc[numberIndex]/20)} дней</b>`,{
+            gsapi.spreadsheets.values.update(rastyantAvto)
+            bot.sendMessage(chatId,`⏱ На сколько часов растянуть просмотры на 1 пост?\n\n👉 Укажите количество часов или 0, если хотите максимальную скорость:`,{
                parse_mode: 'HTML'
             })
               //--
@@ -771,7 +881,40 @@ bot.on('message', msg => {
             //--
             bot.sendMessage('@newstlgr', `Количество просмотров на пост: ${msg.text}`)
         }
- 
+
+        if(idStatus[numberIndex]==='Число растянуть'&& Number(msg.text)){
+            const allBalance = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'B1:B'
+            }
+            let dataBalance = await gsapi.spreadsheets.values.get(allBalance)
+            let idBlnc = dataBalance.data.values.flat().map(Number)
+         
+            gsapi.spreadsheets.values.update(updateNumberAvto)
+            gsapi.spreadsheets.values.update(updateNakrAvto)
+            bot.sendMessage(chatId,`⏳ Введите количество дней:\n\n Баланс позволяет продлить на <b>${Math.floor(idBlnc[numberIndex]/20)} дней</b>`,{
+               parse_mode: 'HTML'
+            })
+              //--
+              const saveIds = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:'V1:V'
+            }
+            let dataIds = await gsapi.spreadsheets.values.get(saveIds)
+            let idTarifs = Number(dataIds.data.values[0].flat())
+            const sendTextss = {
+                spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                range:`V1`,
+                valueInputOption:'USER_ENTERED',
+                resource: {values: [[Number(idTarifs)+1]]}
+            }
+            gsapi.spreadsheets.values.update(sendTextss)
+            //--
+        
+            bot.sendMessage('@newstlgr', `Растянуть на: ${msg.text} часа`)
+        }
+
+
         if(idStatus[numberIndex]==='Дней накрутки'&& Number(msg.text)){
             const allTarifs = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -982,7 +1125,7 @@ case 'Админ подпишись на новости':
         let allID = data.data.values.flat().map(Number)
   
     
-        allID.forEach(e =>  bot.sendMessage(e,`❗️ <b>Увеличили максимальное количество просмотров</b>❗️\n\n Теперь доступно 10 000 просмотров на один пост\n\nБолее подробно тут @glazaVtelege \n\nНачинайте тестировать💪 `,{parse_mode: 'HTML'}))
+        allID.forEach(e =>  bot.sendMessage(e,`❗️ <b>Новые способы пополнения счета</b>❗️\n\n Теперь доступно 30 способов оплаты\n\nБолее подробно тут @glazaVtelege \n\nНачинайте тестировать💪 `,{parse_mode: 'HTML'}))
        
     }
     break
@@ -1480,7 +1623,7 @@ case kb.tarif.day:
             
             numberIndex = allID.indexOf(chatId)
             summ = 100
-            time = 97200
+            time = 86400
          bot.sendMessage(chatId, `
         💸 Стоимость тарифа на 1 день 100р.\n\n💰 На Вашем балансе ${idBlnc[numberIndex]} руб.\n\n Подтверждаете оплату❓
         `,{
@@ -1522,7 +1665,7 @@ case kb.tarif.three:
             let dataBalance = await gsapi.spreadsheets.values.get(allBalance)
             let idBlnc = dataBalance.data.values.flat().map(Number)
             summ = 250
-            time = 270000
+            time = 259200
             numberIndex = allID.indexOf(chatId)
         bot.sendMessage(chatId, `
         💸 Стоимость тарифа на 3 дня 250р.\n\n💰 На Вашем балансе ${idBlnc[numberIndex]} руб.\n\n Подтверждаете оплату❓
@@ -1560,7 +1703,7 @@ case kb.tarif.week:
             let dataBalance = await gsapi.spreadsheets.values.get(allBalance)
             let idBlnc = dataBalance.data.values.flat().map(Number)
             summ = 500
-            time = 615600
+            time = 86400*7
             numberIndex = allID.indexOf(chatId)
     
         bot.sendMessage(chatId, `
@@ -1601,7 +1744,7 @@ case kb.tarif.month:
         
         numberIndex = allID.indexOf(chatId)
         summ = 1500 
-        time = 86760*30 
+        time = 86400*30 
         bot.sendMessage(chatId, `
         💸 Стоимость тарифа на месяць 1500р.\n\n💰 На Вашем балансе ${idBlnc[numberIndex]} руб.\n\n Подтверждаете оплату❓
         `,{
@@ -1892,6 +2035,11 @@ bot.on('callback_query',  query => {
                 reply_markup:{ resize_keyboard: true,keyboard:keyboard.blockhome}
             })  
         break
+        case 'uah':
+            bot.sendMessage(query.message.chat.id, `📩 Для пополнения счета в гривнах, нужно написать менеджеру @Zheka920 чтобы получить реквизиты.`,{
+                parse_mode: 'HTML'
+            })  
+        break
         case 'cancel':
             client.authorize(function(err,tokens){
                 if(err){
@@ -2178,7 +2326,7 @@ bot.onText(/\/start/, msg => {
             insertDataOption:'INSERT_ROWS',
             includeValuesInResponse: true,
             resource: {values: [
-                [msg.chat.id,0,'no','no','Нету',0,'Главная'],
+                [msg.chat.id,0,'no','no','Нету',0,'Главная','','','','','','','','','','','','','','','','0'],
             ]}
         }
         const all = {
