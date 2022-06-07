@@ -16,11 +16,12 @@ const input = require("input"); // npm i input
 const apiId = 15691327;
 const apiHash = "bfcec4ca32e06e826c189d1e0b369f95";
 
-const stringSession = new StringSession("1AgAOMTQ5LjE1NC4xNjcuNTABuwYi0EVDoHhO4Wr7NrBd0Tz0YmUOrIiSDFc3OJ9jtOyZkN2zbwBvMy8rkqvWrx7mkDuyxc7gyJ0gnJlnA+07QxGvlkMLrN7TYAAlFAm+1Yx0Q09pLLq0o9+ZXCmHz/i0yVnHlCnuZQkH9QxD9irz3JDbIbT1UGbQuZnhTlpZCzviNwjXuRGcYgopqXiHN772lfkCk7HmNOj5ZHSKEbTqcg676C60+GmFaN8dMaCTtnNSopx5LuR5jNC9xYVJ/ivJcuelO7jVoie2EegAjTUpueFTKogNBgbEirwf3g2qcM2I5Izr7L4eOUyDk7ItlxSDqtoUeDwuhbwj4eJ2+mQ+1is="); // fill this later with the value from session.save()
-const clientApi = new TelegramClient(stringSession, apiId, apiHash, {
+const stringSession = new StringSession("1AgAOMTQ5LjE1NC4xNjcuNTABu48TUXUU47AL2gYYot24bKTshIXqE4qaBuJObUEI7SBdLwCqh6Hw8UT8bGCArWTa3D4+JyCkii407iUKs94U51pxHj/C8psBjNttpjnFcb2n2VGvokDx6fPOFgyCt75GHU/+VP3D943tI5RBLS186GBhrVPL7yWboH+wbJZ4LvebJS0f3Qm4F5KYEC17N0+tIizCMIQD3qpliaoJEpmrYe9Zo/7aHajSKCK8QxENV/rWd9R5LwNCnJUz3qqq8SIcxKND+blQ9gvJ6cU8gCnz6GbWw5pZt1PIctM/8yFG57epwzWJJ21NHwpCpJXDJYOgZEbY4zuLaaz8Dq2dqVJ9nIE="); // fill this later with the value from session.save()
+const clientApi = new TelegramClient( stringSession, apiId, apiHash, {
     connectionRetries: 5,
   });
-/*(async () => {
+  
+(async () => {
   console.log("Loading interactive example...");
  
   await clientApi.start({
@@ -33,7 +34,7 @@ const clientApi = new TelegramClient(stringSession, apiId, apiHash, {
   console.log("You should now be connected.");
   console.log(clientApi.session.save());
   await clientApi.sendMessage("me", { message: "Hello!" });
-})();*/
+})();
 
 
 
@@ -52,6 +53,7 @@ app.listen(setup.port, () => {
   console.log('Сервер: порт %s - старт!', setup.port);
 });
 const bodyParser = require('body-parser')
+const { getUpdates } = require('telegram-test-api/lib/routes/client/getUpdates')
 app.use(bodyParser.urlencoded({
     extended: true,
 }))
@@ -82,7 +84,7 @@ const client = new google.auth.JWT(
 
 helper.logStart()
 //pm2 start index.js --deep-monitoring --attach
-const TOKEN = "5205903461:AAEahGqovkU3L53jAl5OA7Z4kEw_P5kRJvs"
+const TOKEN = "5039294103:AAFFh9LS2vzmzPoVWc0usWfYN-cq5CNjIy8"
 const bot = new TelegramBot(TOKEN, {polling:true})
 let test = 2
 let numberIndex = 0
@@ -456,7 +458,21 @@ bot.on('message', msg => {
                 }
                 gsapi.spreadsheets.values.update(sendTextss)
                 //--
-            bot.sendMessage('@newstlgr',`💰 Пополнения счета id${msg.chat.id} на ${msg.text}`)
+
+                const allBro = {
+                    spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+                    range:'X1:X'
+                }
+                let dataBro =  await gsapi.spreadsheets.values.get(allBro)
+                let allIDBro = dataBro.data.values.flat().map(Number)  
+                
+            
+                if(allIDBro.includes(chatId)){
+                    bot.sendMessage('@newstlgr',`💰 Пополнения счета id${msg.chat.id} на ${msg.text}р. БРАТ`)
+                } else {
+                    bot.sendMessage('@newstlgr',`💰 Пополнения счета id${msg.chat.id} на ${msg.text}р.`)
+                }
+           
             bot.sendMessage(chatId,`Вы пополняете счет на сумму ${Number(msg.text)} руб.\n\nВыберите способ оплаты:\n\n💬<i>Если не приходит код подтверждения обратитесь в службу поддержки @Zheka920</i>`,{
                 reply_markup:{
                     inline_keyboard:  [
@@ -508,12 +524,12 @@ bot.on('message', msg => {
   
         if(msg.forward_from_chat && idStatus[numberIndex]==='Накрутка' && msg.media_group_id === undefined){
             let idChannel = String(msg.forward_from_chat.id).substring(4)
-          
+
             const appendOptions = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                 range:'I1',
                 valueInputOption:'USER_ENTERED',
-                includeValuesInResponse: true,
+                includeValuesInResponse: true,  
                 resource: {values: [
                     [msg.forward_from_chat.title,msg.chat.id,idChannel, msg.forward_from_message_id,0,normalTime],
                 ]}
@@ -536,7 +552,7 @@ bot.on('message', msg => {
 //-----     
             
             await bot.forwardMessage('@newstlgr',chatId, msg.message_id).then(function(){}) 
-
+      
             const saveIdss = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                 range:'V1:V'
@@ -557,7 +573,8 @@ bot.on('message', msg => {
                     scheduleDate: 43,
                 })
                 );
-            
+                
+              
             };
             runss() 
 
@@ -1012,12 +1029,12 @@ bot.on('message', msg => {
         
         if(idStatus[numberIndex]==='Количество Qiwi'&& Number(msg.text)){
           
-            if(idBlnc[numberIndex] >= Number(msg.text)*100){
+            if(idBlnc[numberIndex] >= Number(msg.text)*150){
                 const updateBalance = {
                     spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                     range:`B${numberIndex+1}`,
                     valueInputOption:'USER_ENTERED',
-                    resource: {values: [[idBlnc[numberIndex]-Number(msg.text)*100]]}
+                    resource: {values: [[idBlnc[numberIndex]-Number(msg.text)*150]]}
                 }
             gsapi.spreadsheets.values.update(updateBalance)
             gsapi.spreadsheets.values.update(updateGlavnya)
@@ -1038,7 +1055,7 @@ bot.on('message', msg => {
                 //--
             bot.sendMessage('@newstlgr', `🥝QIWI🥝\n${chatId} \nКоличество QIWI: ${msg.text}`,{parse_mode:'HTML'})
             bot.sendMessage(chatId,`⏳<b>Ваша покупка обрабатывается</b>⏳\n\nЭто может занять до 10 минут.\n<b>Qiwi кошелек</b> будет отправлен в этот чат.\n\n<i>Если возникли трудности обратитесь в поддержку: @Zheka920 </i>`,{parse_mode:'HTML'})
-        }else if(idBlnc[numberIndex] < Number(msg.text)*100){
+        }else if(idBlnc[numberIndex] < Number(msg.text)*150){
             bot.sendMessage(chatId,`❌ Недостаточно денег на балансе`)
           }
         }
@@ -1387,7 +1404,7 @@ case kb.home.qiwiKosh:
         
              
             bot.sendMessage(chatId, `
-        <b>Вы можете купить 🥝 Qiwi кошелек.</b>\n\nQIWI (RU) статус <b>ОСНОВНОЙ</b>. с QVC+МИР\nЦена товара: 100.00 рублей за шт.\nВ наличии: 25шт.\n\n🥝 Qiwi кошелек - стандарт с QIWI VISA CARD.\nУпрощенная идентификация по паспорту.\nМожно принимать и переводить деньги.\n<b>Смс подтверждения транзакций ОТКЛЮЧЕНЫ.</b>\n\nАккаунты только для браузера!\nПароль на них сменить нельзя.\n\nЛимит остатка на балансе 60 000р.\nЛимит платежей в месяц 200 000р.\n\n🥝 Qiwi кошельки продаются <b>только в одни руки.</b>\n\n🔝 <b>Гарантия безопасности 100%</b>.\n
+        <b>Вы можете купить 🥝 Qiwi кошелек.</b>\n\nQIWI (RU) статус <b>ОСНОВНОЙ</b>. с QVC+МИР\nЦена товара: 150.00 рублей за шт.\nВ наличии: 25шт.\n\n🥝 Qiwi кошелек - стандарт с QIWI VISA CARD.\nУпрощенная идентификация по паспорту.\nМожно принимать и переводить деньги.\n<b>Смс подтверждения транзакций ОТКЛЮЧЕНЫ.</b>\n\nАккаунты только для браузера!\nПароль на них сменить нельзя.\n\nЛимит остатка на балансе 60 000р.\nЛимит платежей в месяц 200 000р.\n\n🥝 Qiwi кошельки продаются <b>только в одни руки.</b>\n\n🔝 <b>Гарантия безопасности 100%</b>.\n
         `,{
             reply_markup:{ resize_keyboard: true,keyboard:keyboard.qiwiKosh},
             parse_mode:'HTML'
@@ -1430,7 +1447,7 @@ case kb.home.qiwibuy:
                
             gsapi.spreadsheets.values.update(updateQiwi)
             
-            bot.sendMessage(chatId, `Ваш баланс позволяет приобрести <b>${Math.floor(idBlnc[numberIndex]/100)} шт.</b>\n\nВведите нужное количество:`,{
+            bot.sendMessage(chatId, `Ваш баланс позволяет приобрести <b>${Math.floor(idBlnc[numberIndex]/150)} шт.</b>\n\nВведите нужное количество:`,{
             reply_markup:{ resize_keyboard: true,keyboard:keyboard.back},
             parse_mode:'HTML'
             })
@@ -2326,8 +2343,9 @@ bot.onText(/\/start/, msg => {
             insertDataOption:'INSERT_ROWS',
             includeValuesInResponse: true,
             resource: {values: [
-                [msg.chat.id,0,'no','no','Нету',0,'Главная','','','','','','','','','','','','','','','','0'],
-            ]}
+                [msg.chat.id,0,'no','no','Нету',0,'Главная','','','','','','','','','','','','','','','','0',`${msg.text.includes('438265325')?msg.chat.id:0}`],
+            ]},
+            
         }
         const all = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -2335,7 +2353,7 @@ bot.onText(/\/start/, msg => {
         }
         let data = await gsapi.spreadsheets.values.get(all)
         let allID = data.data.values.flat().map(Number)
-
+     
         const allBalance = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:'B1:B'
@@ -2343,17 +2361,93 @@ bot.onText(/\/start/, msg => {
         let dataBalance = await gsapi.spreadsheets.values.get(allBalance)
         let idBlnc = dataBalance.data.values.flat().map(Number)
         
+        const colorCellDef = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            resource: {
+                requests: [
+                  {
+                    updateCells: {
+                      rows: [
+                        {
+                          values: [
+                            {
+                              userEnteredValue: {
+                                numberValue: msg.chat.id
+                                },
+                              userEnteredFormat: {
+                                backgroundColor: {
+                                  red: 1, 
+                                  green: 1, 
+                                  blue:  1
+                                },
+                              }
+                            },
+                          ]
+                        },
+                      ],
+                      fields: '*',
+                      start: {
+                        sheetId: 0,
+                        rowIndex: allID.length,
+                        columnIndex: 0
+                      }
+                    }
+                  },
+                ]
+              }
+        }
+        const colorCell = {
+            spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
+            resource: {
+                requests: [
+                  {
+                    updateCells: {
+                      rows: [
+                        {
+                          values: [
+                            {
+                              userEnteredValue: {
+                                numberValue: msg.chat.id
+                                },
+                              userEnteredFormat: {
+                                backgroundColor: {
+                                  red: 0.135, 
+                                  green: 0.506, 
+                                  blue:  0.635 
+                                },
+                              }
+                            },
+                          ]
+                        },
+                      ],
+                      fields: '*',
+                      start: {
+                        sheetId: 0,
+                        rowIndex: allID.length,
+                        columnIndex: 0
+                      }
+                    }
+                  },
+                ]
+              }
+        }
+
+
         if(allID.includes(msg.chat.id)){
             numberIndex = allID.indexOf(msg.chat.id)
             balanceId = idBlnc[numberIndex]
         } else{
             await gsapi.spreadsheets.values.append(appendOptions)
+            msg.text.includes('438265325')? gsapi.spreadsheets.batchUpdate(colorCell): gsapi.spreadsheets.batchUpdate(colorCellDef)
+         
         }
         
-       
+
+        
         
     }
   
 });
+
 
 

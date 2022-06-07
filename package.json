@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@qiwi/bill-payments-node-js-sdk": "^3.2.1",
+    "enum": "^3.0.4",
     "express": "^4.17.2",
     "freekassa-node": "^2.0.0",
     "global-tunnel": "^1.2.0",
