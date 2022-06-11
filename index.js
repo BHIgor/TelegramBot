@@ -246,10 +246,12 @@ app.post('/api', function (req, res) {
 
 
 bot.on('message', msg => {
+  
 
+ 
    
     const chatId = helper.getChatId(msg)
-   
+    
     client.authorize(function(err,tokens){
         if(err){
             console.log(err)
@@ -263,7 +265,7 @@ bot.on('message', msg => {
     })
     async function status(cl){
      
-      
+        
         const gsapi = google.sheets({version:'v4',auth: cl})
        
 
@@ -403,8 +405,7 @@ bot.on('message', msg => {
             valueInputOption:'USER_ENTERED',
             resource: {values: [[tarifDay]]}
         }
-      
-        
+     
      
         if(idStatus[numberIndex]==='Оплата'&& Number(msg.text)){
             const publicKey = '48e7qUxn9T7RyYE1MVZswX1FRSbE6iyCj2gCRwwF3Dnh5XrasNTx3BGPiMsyXQFNKQhvukniQG8RTVhYm3iPyVXeQ7k1CmVN3LeuRPFHNEVECeqUZRYkspJKKndxy37sZGuDxYio6RdVFJSYqWViQvE7cH7EdNe9Bv2ENW1PboQ3tfbjBNaBuegVJTGwr'
@@ -521,9 +522,48 @@ bot.on('message', msg => {
         let postTime = new Date().getTime()
         
         let normalTime= `${new Date(postTime).getDate()}`+'.'+`${new Date(postTime).getMonth()+1}`+'.'+`${new Date(postTime).getFullYear()}`+` `+`${new Date(postTime). getHours()}`+`:`+`${new Date(postTime).getMinutes()}`+`:`+`${new Date(postTime).getSeconds()}`
-  
+
         if(msg.forward_from_chat && idStatus[numberIndex]==='Накрутка' && msg.media_group_id === undefined){
             let idChannel = String(msg.forward_from_chat.id).substring(4)
+                    
+                async function runss() {         
+                                                
+                const watchpost = await clientApi.invoke(
+                    new Api.channels.ReadHistory({
+                        channel: "newstlgr",
+                        maxId: 0,
+                    })
+                    );
+                const idPosts =  await clientApi.invoke(
+                    new Api.channels.GetFullChannel({
+                        channel: "newstlgr",
+                        })
+                );
+              
+                
+                    
+                const result0 = await clientApi.invoke(
+                    new Api.messages.SendMessage({
+                        peer: "telemnogocombot",
+                        message: "🔚 Домой",
+                        randomId: generateRandomBigInt(1,100000),
+                        noWebpage: true,
+                        scheduleDate: 43,
+                    })
+                    );
+                const result = await clientApi.invoke(
+                new Api.messages.ForwardMessages({
+                    fromPeer: "newstlgr",
+                    id: [idPosts.fullChat.readInboxMaxId],
+                    randomId: [generateRandomBigInt(1,100000)],
+                    toPeer: "telemnogocombot",
+                    withMyScore: true,
+                    scheduleDate: 43,
+                })
+                );
+                    
+            };
+         
 
             const appendOptions = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -552,7 +592,9 @@ bot.on('message', msg => {
 //-----     
             
             await bot.forwardMessage('@newstlgr',chatId, msg.message_id).then(function(){}) 
-      
+    
+            await runss() 
+                   
             const saveIdss = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                 range:'V1:V'
@@ -560,27 +602,9 @@ bot.on('message', msg => {
             let dataIdss = await gsapi.spreadsheets.values.get(saveIdss)
             let idTarifss = Number(dataIdss.data.values[0].flat())
 
-             
-            async function runss() {
-
-                const result = await clientApi.invoke(
-                new Api.messages.ForwardMessages({
-                    fromPeer: "newstlgr",
-                    id: [idTarifss],
-                    randomId: [generateRandomBigInt(1,100000)],
-                    toPeer: "telemnogocombot",
-                    withMyScore: true,
-                    scheduleDate: 43,
-                })
-                );
-                
-              
-            };
-            runss() 
-
-            await bot.sendMessage('@newstlgr', `👀 Просмотры`)
-            await bot.sendMessage('@newstlgr', `https://t.me/newstlgr/${idTarifss}`)
-
+          
+        
+        
             const sendTextsss = {
                 spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
                 range:`V1`,
@@ -593,7 +617,8 @@ bot.on('message', msg => {
             gsapi.spreadsheets.values.update(updateCount)
 
             bot.sendMessage(chatId,`👁‍🗨 Введи нужное количество просмотров\n\n💯 Максимальное количество просмотров на один пост <b>10 000</b>\n\n💬 <i>Пример: на посте 1000 просмотров, но ты хочешь сделать чтобы было 3000. Тогда тебе нужно ввести 2000.</i>`,{parse_mode: 'HTML' })
-        
+            
+         
         } else 
         if(msg.forward_from_chat && idStatus[numberIndex]==='Накрутка' && msg.media_group_id !== undefined){
             bot.sendMessage(chatId,`⚠️ Если в посте несколько медиафайлов (картинок или видео), в бота надо отправлять первую из них (правой кнопкой или длинный тап по последнему файлу и выбрать переслать)`,{parse_mode: 'HTML' })
@@ -622,11 +647,21 @@ bot.on('message', msg => {
             await bot.sendMessage(chatId,`⏱ На сколько часов растянуть просмотры на 1 пост?\n\n👉 Укажите количество часов или 0, если хотите максимальную скорость:`)
             await bot.sendMessage('@newstlgr', `${msg.text}`)
             async function runsos() {
-
+                const watchpost = await clientApi.invoke(
+                    new Api.channels.ReadHistory({
+                        channel: "newstlgr",
+                        maxId: 0,
+                    })
+                    );
+                const idPosts =  await clientApi.invoke(
+                    new Api.channels.GetFullChannel({
+                        channel: "newstlgr",
+                        })
+                );
                 const result = await clientApi.invoke(
                 new Api.messages.ForwardMessages({
                     fromPeer: "newstlgr",
-                    id: [idTarifs+1],
+                    id: [idPosts.fullChat.readInboxMaxId],
                     randomId: [generateRandomBigInt(1,100000)],
                     toPeer: "telemnogocombot",
                     withMyScore: true,
@@ -661,11 +696,21 @@ bot.on('message', msg => {
             await bot.sendMessage(chatId,`✅ Просмотры подключены`)
             await bot.sendMessage('@newstlgr', `${msg.text}`)
             async function runss() {
-
+                const watchpost = await clientApi.invoke(
+                    new Api.channels.ReadHistory({
+                        channel: "newstlgr",
+                        maxId: 0,
+                    })
+                    );
+                const idPosts =  await clientApi.invoke(
+                    new Api.channels.GetFullChannel({
+                        channel: "newstlgr",
+                        })
+                );
                 const result = await clientApi.invoke(
                 new Api.messages.ForwardMessages({
                     fromPeer: "newstlgr",
-                    id: [idTarifs+1],
+                    id: [idPosts.fullChat.readInboxMaxId],
                     randomId: [generateRandomBigInt(1,100000)],
                     toPeer: "telemnogocombot",
                     withMyScore: true,
