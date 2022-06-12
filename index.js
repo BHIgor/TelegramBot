@@ -15,7 +15,7 @@ const input = require("input"); // npm i input
 
 const apiId = 15691327;
 const apiHash = "bfcec4ca32e06e826c189d1e0b369f95";
-
+/*
 const stringSession = new StringSession("1AgAOMTQ5LjE1NC4xNjcuNTABu48TUXUU47AL2gYYot24bKTshIXqE4qaBuJObUEI7SBdLwCqh6Hw8UT8bGCArWTa3D4+JyCkii407iUKs94U51pxHj/C8psBjNttpjnFcb2n2VGvokDx6fPOFgyCt75GHU/+VP3D943tI5RBLS186GBhrVPL7yWboH+wbJZ4LvebJS0f3Qm4F5KYEC17N0+tIizCMIQD3qpliaoJEpmrYe9Zo/7aHajSKCK8QxENV/rWd9R5LwNCnJUz3qqq8SIcxKND+blQ9gvJ6cU8gCnz6GbWw5pZt1PIctM/8yFG57epwzWJJ21NHwpCpJXDJYOgZEbY4zuLaaz8Dq2dqVJ9nIE="); // fill this later with the value from session.save()
 const clientApi = new TelegramClient( stringSession, apiId, apiHash, {
     connectionRetries: 5,
@@ -36,7 +36,7 @@ const clientApi = new TelegramClient( stringSession, apiId, apiHash, {
   await clientApi.sendMessage("me", { message: "Hello!" });
 })();
 
-
+*/
 
 const {google} = require('googleapis')
 const keys = require('./credentials.json');
@@ -84,7 +84,7 @@ const client = new google.auth.JWT(
 
 helper.logStart()
 //pm2 start index.js --deep-monitoring --attach
-const TOKEN = "5039294103:AAFFh9LS2vzmzPoVWc0usWfYN-cq5CNjIy8"
+const TOKEN = "5205903461:AAEahGqovkU3L53jAl5OA7Z4kEw_P5kRJvs"
 const bot = new TelegramBot(TOKEN, {polling:true})
 let test = 2
 let numberIndex = 0
@@ -137,7 +137,7 @@ app.post('/apiCassa', function (req, res) {
     let dataOne =  await gsapi.spreadsheets.values.get(idOne)
     let allIDOne = dataOne.data.values.flat().map(Number)[0]
     bot.sendMessage(allIDOne,`Ваш баланс пополнен на ${Number(req.body.AMOUNT)}р.`)
-    bot.sendMessage('@newstlgr',`✅Баланс пополнен на ${Number(req.body.AMOUNT)}р. FREECASSA✅`)
+    bot.sendMessage('@kapustaBablo',`✅Баланс пополнен на ${Number(req.body.AMOUNT)}р. FREECASSA✅`)
 
     const defId = {
         spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -210,7 +210,7 @@ app.post('/api', function (req, res) {
     let dataOne =  await gsapi.spreadsheets.values.get(idOne)
     let allIDOne = dataOne.data.values.flat().map(Number)[0]
     bot.sendMessage(allIDOne,`Ваш баланс пополнен на ${Number(req.body.bill.amount.value)}р.`)
-    bot.sendMessage('@newstlgr',`✅Баланс пополнен на ${Number(req.body.bill.amount.value)}р.✅`)
+    bot.sendMessage('@kapustaBablo',`✅Баланс пополнен на ${Number(req.body.bill.amount.value)}р.✅`)
 
     const defId = {
         spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
@@ -469,9 +469,9 @@ bot.on('message', msg => {
                 
             
                 if(allIDBro.includes(chatId)){
-                    bot.sendMessage('@newstlgr',`💰 Пополнения счета id${msg.chat.id} на ${msg.text}р. БРАТ`)
+                    bot.sendMessage('@kapustaBablo',`💰 Пополнения счета id${msg.chat.id} на ${msg.text}р. БРАТ`)
                 } else {
-                    bot.sendMessage('@newstlgr',`💰 Пополнения счета id${msg.chat.id} на ${msg.text}р.`)
+                    bot.sendMessage('@kapustaBablo',`💰 Пополнения счета id${msg.chat.id} на ${msg.text}р.`)
                 }
            
             bot.sendMessage(chatId,`Вы пополняете счет на сумму ${Number(msg.text)} руб.\n\nВыберите способ оплаты:\n\n💬<i>Если не приходит код подтверждения обратитесь в службу поддержки @Zheka920</i>`,{
@@ -2360,6 +2360,7 @@ bot.on('callback_query',  query => {
 
 bot.onText(/\/start/, msg => {
     const text = `Привет ${msg.from.first_name}, я готов к работе`
+  
 
     bot.sendMessage(helper.getChatId(msg), text, {
         reply_markup:{
@@ -2398,7 +2399,8 @@ bot.onText(/\/start/, msg => {
         }
         let data = await gsapi.spreadsheets.values.get(all)
         let allID = data.data.values.flat().map(Number)
-     
+
+       
         const allBalance = {
             spreadsheetId:'1Hblq_0kcMgtXKiJVxPkWybZoC15f9sRoO6Fyypuu_dg',
             range:'B1:B'
@@ -2483,8 +2485,15 @@ bot.onText(/\/start/, msg => {
             balanceId = idBlnc[numberIndex]
         } else{
             await gsapi.spreadsheets.values.append(appendOptions)
-            msg.text.includes('438265325')? gsapi.spreadsheets.batchUpdate(colorCell): gsapi.spreadsheets.batchUpdate(colorCellDef)
+            if(msg.text.includes('438265325')){ 
+                gsapi.spreadsheets.batchUpdate(colorCell)
+                bot.sendMessage(438265325,`Новий користувач бота БРАТА @${msg.from.username} його id ${msg.from.id}`)
+            } else{
+            gsapi.spreadsheets.batchUpdate(colorCellDef) 
+            bot.sendMessage(438265325,`Новий користувач бота @${msg.from.username} його id ${msg.from.id}`)
          
+            }
+
         }
         
 
