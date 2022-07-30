@@ -3,6 +3,7 @@ module.exports = {
         glaza:'👀 Накрутка просмотров',
         tarif:'👁️ Тарифы',
         avto:'👁‍🗨 Автопросмотры',
+        koment:'📝 Комментарии',
         qiwiKosh:'🥝 Qiwi кошелек',
         instruction:'🧾 Инструкция',
         qiwibuy:'💵 Купить QIWI Кошелек',
@@ -32,7 +33,10 @@ module.exports = {
     },
     profile:{
         balance: '💰 Пополнить счет',
-        tarif:'✏️ Изменить тариф'
+        tarif:'✏️ Изменить тариф',
+        referal:'🗣 Реферальная программа',
+        obmen:'🔄 Обменять',
+        vivod:'💸 Вывести деньги'
     },
     yesornot:{
         yes:'✅ Да',

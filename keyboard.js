@@ -3,7 +3,7 @@ const kb = require('./keyboard-buttons')
 module.exports = {
     home:[
      [kb.home.glaza, kb.home.podpschik],
-     [kb.home.avto],
+     [kb.home.koment, kb.home.avto],
      [kb.home.tarif, kb.home.keryvannya],
      [kb.home.profile,kb.home.qiwiKosh, kb.home.instruction]
     ],
@@ -15,11 +15,16 @@ module.exports = {
     blockhome:[
         [kb.blockhome.kupit, kb.blockhome.proba ],
         [kb.blockhome.podpschik, kb.blockhome.tarif],
-        [kb.blockhome.qiwiKosh],
+        [kb.home.koment, kb.blockhome.qiwiKosh],
         [kb.blockhome.profile, kb.blockhome.instruction]
     ],
     profile:[
         [kb.profile.balance, kb.profile.tarif],
+        [kb.profile.referal],
+        [kb.back]
+    ],
+    refprog:[
+        [kb.profile.obmen, kb.profile.vivod],
         [kb.back]
     ],
     yesornot:[
@@ -37,6 +42,7 @@ module.exports = {
     back:[
         [kb.back]
     ],
+    
    
 
 }
