@@ -4,7 +4,7 @@ module.exports = {
     home:[
      [kb.home.glaza, kb.home.podpschik],
      [kb.home.koment, kb.home.avto],
-     [kb.home.tarif, kb.home.keryvannya],
+     [kb.home.reaction, kb.home.keryvannya],
      [kb.home.profile,kb.home.qiwiKosh, kb.home.instruction]
     ],
     tarif:[
@@ -12,11 +12,14 @@ module.exports = {
         [kb.tarif.week, kb.tarif.month],
         [kb.tarif.back]
     ],
+    komentReaction:[
+        [kb.home.koment, kb.home.reaction]
+    ],
     blockhome:[
         [kb.blockhome.kupit, kb.blockhome.proba ],
         [kb.blockhome.podpschik, kb.blockhome.tarif],
-        [kb.home.koment, kb.blockhome.qiwiKosh],
-        [kb.blockhome.profile, kb.blockhome.instruction]
+        [kb.home.koment, kb.home.reaction],
+        [kb.blockhome.profile, kb.blockhome.qiwiKosh, kb.blockhome.instruction]
     ],
     profile:[
         [kb.profile.balance, kb.profile.tarif],

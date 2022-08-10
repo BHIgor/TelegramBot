@@ -3,8 +3,11 @@ const kb = require('./keyboard-buttons')
 const keyboard = require('./keyboard')
 const helper = require('./helper')
 const sessionAkk = require('./sessionAkk')
+const sessionAkkReaction = require('./sessionAkkReaction')
 const http = require('http')
 const url = require('url')
+const { exec } = require("child_process");
+
 
 const mysql = require("mysql2/promise");
 const config = require('./config')
@@ -20,8 +23,8 @@ const input = require("input"); // npm i input
 
 const apiId = 13546883;
 const apiHash = "717b67ceb0ab2a1aa7fc9f858969e15f";
-/*
-const stringSession = new StringSession("1AgAOMTQ5LjE1NC4xNjcuNTABuwrg3/xr8bnPb0KeYRvqqfoTiLeU7MHWy4hfM/Xt6l4fJ+e+6VyM4O0Mci52W0agytCdEm2pX2e+CeLL9LFK3WDGYp7haVeHFuqTF4zqSl/TNcZxUyjWdY8BU9nDC4QykUr/gu3W1u79VRUwZBtIo/zaaumY2D5RbMkUHnmP9UooQsJ0t3JYdyq1y3xtGNhTuLVs67k56JuHq3zAxB3aBqoByngdByqvQ0FJyHcyiet76qp5ta17rNvMhRD1oUxVCbSadlxHnHgh0lbXNUqymc003uaD/oakS34oujBuKk2mKcX8yhlQ43mA/jC1dN0wMactHZ4Skq8f+lguZ4Tu96k="); // fill this later with the value from session.save()
+
+const stringSession = new StringSession("1AgAOMTQ5LjE1NC4xNjcuNDEBu3lZ+EJXuzE1rw7ctYWlpwIsv17I6vvW1ifcMgfhZgAeUi15rph2q8WfIKINhmV83M2NutTCdphfu34kwcmck1MIt/gqz/FzwJa5k6beeQzqtod6uWApkUtekD5gQi5MTbTpvlgg0RDDd+J3Xgm/emz6sKWD+VBeOD9XNfEDfQHQOG1ZZVKhMR+eYx14X3gFUFYozMdO9r3gfQZfBq/aJ+dzAQfpZa69yda0KadPnVCHIx+1r8fGKkjZyrcEDxwC0AxjmH/lDZnMy86oKkephqj3nl0dU6bUU5nS16x2sTC6KWzmnET9N2eAgsnXYzaDiqr9RE1iiIxinKQsLJ12Q4I="); // fill this later with the value from session.save()
 const clientApi = new TelegramClient( stringSession, apiId, apiHash, {
     connectionRetries: 5,
     
@@ -41,12 +44,10 @@ const clientApi = new TelegramClient( stringSession, apiId, apiHash, {
   console.log(clientApi.session.save());
   await clientApi.sendMessage("me", { message: "Hello!" });
 
-
-
-
 })();
 
-*/
+
+
 const {google} = require('googleapis')
 const keys = require('./credentials.json');
 const { chat } = require('googleapis/build/src/apis/chat');
@@ -64,6 +65,7 @@ app.listen(setup.port, () => {
 const bodyParser = require('body-parser')
 const { getUpdates } = require('telegram-test-api/lib/routes/client/getUpdates')
 const { error } = require('console')
+const { resolve } = require('path')
 app.use(bodyParser.urlencoded({
     extended: true,
 }))
@@ -85,23 +87,22 @@ app.get('/bad', function (req, res) {
     res.send('shop-verification-nrmdP6emVL')
   
   })    
-
-
+ 
 app.listen(process.env.PORT)
 //process.env.PORT
 
 helper.logStart()
 //pm2 start index.js --deep-monitoring --attach
-const TOKEN = "5205903461:AAEahGqovkU3L53jAl5OA7Z4kEw_P5kRJvs"
+const TOKEN = "5169973391:AAH2-yK4i1T9xc-aWXvBA1pfEvu2weLK48U"
 const bot = new TelegramBot(TOKEN, {polling:true})
 let test = 2
 let numberIndex = 0
 let summ = 0
 let time = 0
+let verh = 0
+let vniz = 0
 
-
-
-
+ 
 
 app.post('/apicassa', function (req, res) {
     console.log(req.body)
@@ -152,7 +153,7 @@ app.post('/api', function (req, res) {
             referal = e.brat
         })  
 
-        const [refer] = await connMysql.execute(`select * from users WHERE id = ${referal}`)
+        const [refer] = await connMysql.execute(`select * from users WHERE id = '${referal}'`)
 
         refer.map(e =>{
             refBalance = e.hz
@@ -171,9 +172,9 @@ app.post('/api', function (req, res) {
         bot.sendMessage('@kapustaBablo',`✅Баланс пополнен на ${Number(req.body.bill.amount.value)}р.`)
        
         if(referal != ''){
-            await connMysql.execute(`UPDATE users SET hz=${Number(refBalance)+(Number(req.body.bill.amount.value))*0.2} WHERE id = '${referal}'`)    
-            bot.sendMessage(referal,`Ваш реферальний баланс пополнен на ${(Number(req.body.bill.amount.value))*0.2}р.`)
-        }
+            await connMysql.execute(`UPDATE users SET hz=${Math.floor(Number(refBalance)+(Number(req.body.bill.amount.value))*0.2)} WHERE id = '${referal}'`)    
+            bot.sendMessage(referal,`Ваш реферальний баланс пополнен на ${Math.floor((Number(req.body.bill.amount.value))*0.2)}р.`)
+        } 
 
         }else{
             console.log('errorssss')
@@ -190,8 +191,10 @@ app.post('/api', function (req, res) {
 
 
 bot.on('message', msg => {
- 
+  
     const chatId = helper.getChatId(msg)
+   
+   
 
     async function status(){
         const connMysql = await mysql.createConnection(config) 
@@ -212,24 +215,43 @@ bot.on('message', msg => {
             }
         })  
 
- 
+      
+        let usersId  = []
+
+        const result = await clientApi.invoke(new Api.channels.GetParticipants({
+            channel: 'glazaVtelege',
+            filter: new Api.ChannelParticipantsMentions({}),
+            offset: 0,
+            limit: 10000,
+            hash: BigInt('-4156887774564')
+        
+            }));
+    
+      
+          result.users.map(e => {
+            usersId.push(parseInt(e.id))
+        })    
+       
         if(oneId===''){
             bot.sendMessage(chatId,`Чтобы продолжить выполните команду /start`)
-        } else {
+        } else if(!usersId.includes(chatId)){
+            bot.sendMessage(chatId,`❗️ <b>Подпишитесь чтобы убрать это сообщение</b> ❗️\nЧтобы использовать бота вы должны быть подписаны на наш канал @glazaVtelege\n\n<i>В случаи блокировки бота, на канале вы найдете всегда актуальную ссылку на бота</i>`,{parse_mode: 'HTML' })
+        }else{
 
         if(msg.forward_from_chat && oneStatus==='Накрутка' && msg.media_group_id === undefined){
             let idChannel = String(msg.forward_from_chat.id).substring(4)
 
+            
             async function zakazilo() { 
                 const watchpost = await clientApi.invoke(
                     new Api.channels.ReadHistory({
-                        channel: "zakazilo",
+                        channel: "-1001632245000",
                         maxId: 0,
                     })
                     );
                 const idPosts =  await clientApi.invoke(
                     new Api.channels.GetFullChannel({
-                        channel: "zakazilo",
+                        channel: "-1001632245000",
                         })
                 );
                
@@ -244,7 +266,7 @@ bot.on('message', msg => {
                     );
                 const result = await clientApi.invoke(
                 new Api.messages.ForwardMessages({
-                    fromPeer: "zakazilo",
+                    fromPeer: "-1001632245000",
                     id: [idPosts.fullChat.readInboxMaxId],
                     randomId: [generateRandomBigInt(1,100000)],
                     toPeer: "telemnogocombot",
@@ -257,13 +279,13 @@ bot.on('message', msg => {
                                                 
                 const watchpost = await clientApi.invoke(
                     new Api.channels.ReadHistory({
-                        channel: "delishkis",
+                        channel: "-1001769608495",
                         maxId: 0,
                     })
                     );
                 const idPosts =  await clientApi.invoke(
                     new Api.channels.GetFullChannel({
-                        channel: "delishkis",
+                        channel: "-1001769608495",
                         })
                 );
                
@@ -278,7 +300,7 @@ bot.on('message', msg => {
                     );
                 const result = await clientApi.invoke(
                 new Api.messages.ForwardMessages({
-                    fromPeer: "delishkis",
+                    fromPeer: "-1001769608495",
                     id: [idPosts.fullChat.readInboxMaxId],
                     randomId: [generateRandomBigInt(1,100000)],
                     toPeer: "telemnogocombot",
@@ -293,7 +315,7 @@ bot.on('message', msg => {
            
             await connMysql.execute(`INSERT INTO views(name,idUser,idChannel,numberZakaz) VALUES('${msg.forward_from_chat.title}',${msg.chat.id},${idChannel},${billid})`)
             
-            await bot.forwardMessage((Number(idChannel)===1735748885||Number(idChannel)===1557490766 ||Number(idChannel)===1786540189||Number(idChannel)===1660144286)?'@zakazilo':'@delishkis',chatId, msg.message_id).then(function(){}) 
+            await bot.forwardMessage((Number(idChannel)===1735748885||Number(idChannel)===1557490766 ||Number(idChannel)===1786540189||Number(idChannel)===1660144286)?'-1001632245000':'-1001769608495',chatId, msg.message_id).then(function(){}) 
     
             await (Number(idChannel)===1735748885||Number(idChannel)===1557490766||Number(idChannel)===1786540189||Number(idChannel)===1660144286)?zakazilo():runss()
                    
@@ -332,23 +354,23 @@ bot.on('message', msg => {
             chislo()
 
           
-            await bot.sendMessage((idChnl===1735748885||idChnl===1557490766||idChnl===1786540189||idChnl===1660144286)?'@zakazilo':'@delishkis', `${msg.text}`)
+            await bot.sendMessage((idChnl===1735748885||idChnl===1557490766||idChnl===1786540189||idChnl===1660144286)?'-1001632245000':'-1001769608495', `${msg.text}`)
         
             async function zakazos() {
                 const watchpost = await clientApi.invoke(
                     new Api.channels.ReadHistory({
-                        channel: "zakazilo",
+                        channel: "-1001632245000",
                         maxId: 0,
                     })
                     );
                 const idPosts =  await clientApi.invoke(
                     new Api.channels.GetFullChannel({
-                        channel: "zakazilo",
+                        channel: "-1001632245000",
                         })
                 );
                 const result = await clientApi.invoke(
                 new Api.messages.ForwardMessages({
-                    fromPeer: "zakazilo",
+                    fromPeer: "-1001632245000",
                     id: [idPosts.fullChat.readInboxMaxId],
                     randomId: [generateRandomBigInt(1,100000)],
                     toPeer: "telemnogocombot",
@@ -362,18 +384,18 @@ bot.on('message', msg => {
           async function runsos() {
                 const watchpost = await clientApi.invoke(
                     new Api.channels.ReadHistory({
-                        channel: "delishkis",
+                        channel: "-1001769608495",
                         maxId: 0,
                     })
                     );
                 const idPosts =  await clientApi.invoke(
                     new Api.channels.GetFullChannel({
-                        channel: "delishkis",
+                        channel: "-1001769608495",
                         })
                 );
                 const result = await clientApi.invoke(
                 new Api.messages.ForwardMessages({
-                    fromPeer: "delishkis",
+                    fromPeer: "-1001769608495",
                     id: [idPosts.fullChat.readInboxMaxId],
                     randomId: [generateRandomBigInt(1,100000)],
                     toPeer: "telemnogocombot",
@@ -404,30 +426,30 @@ bot.on('message', msg => {
             async function times(){
                 
                 await bot.sendMessage(chatId,`✅ Просмотры подключены`)
-                await connMysql.execute(`UPDATE views SET time=${Number(msg.text)} WHERE numberZakaz = ${oneNumber}`)
+                await connMysql.execute(`UPDATE views SET time=${Number(msg.text)} WHERE numberZakaz = '${oneNumber}'`)
                 await connMysql.execute(`UPDATE users SET status="Накрутка" WHERE id = ${oneId}`)
                 
                 await connMysql.end()
             }
             times()
             
-            await bot.sendMessage((idChnl===1557490766||idChnl===1735748885||idChnl===1786540189||idChnl===1660144286)?'@zakazilo':'@delishkis', `${msg.text}`)
+            await bot.sendMessage((idChnl===1557490766||idChnl===1735748885||idChnl===1786540189||idChnl===1660144286)?'-1001632245000':'-1001769608495', `${msg.text}`)
         
             async function zakazTime() {
                 const watchpost = await clientApi.invoke(
                     new Api.channels.ReadHistory({
-                        channel: "zakazilo",
+                        channel: "-1001632245000",
                         maxId: 0,
                     })
                     );
                 const idPosts =  await clientApi.invoke(
                     new Api.channels.GetFullChannel({
-                        channel: "zakazilo",
+                        channel: "-1001632245000",
                         })
                 );
                 const result = await clientApi.invoke(
                 new Api.messages.ForwardMessages({
-                    fromPeer: "zakazilo",
+                    fromPeer: "-1001632245000",
                     id: [idPosts.fullChat.readInboxMaxId],
                     randomId: [generateRandomBigInt(1,100000)],
                     toPeer: "telemnogocombot",
@@ -440,18 +462,18 @@ bot.on('message', msg => {
             async function runss() {
                 const watchpost = await clientApi.invoke(
                     new Api.channels.ReadHistory({
-                        channel: "delishkis",
+                        channel: "-1001769608495",
                         maxId: 0,
                     })
                     );
                 const idPosts =  await clientApi.invoke(
                     new Api.channels.GetFullChannel({
-                        channel: "delishkis",
+                        channel: "-1001769608495",
                         })
                 );
                 const result = await clientApi.invoke(
                 new Api.messages.ForwardMessages({
-                    fromPeer: "delishkis",
+                    fromPeer: "-1001769608495",
                     id: [idPosts.fullChat.readInboxMaxId],
                     randomId: [generateRandomBigInt(1,100000)],
                     toPeer: "telemnogocombot",
@@ -698,7 +720,7 @@ bot.on('message', msg => {
                                        }
                                    ]]
                             },parse_mode: 'HTML'})
-                            bot.sendMessage('@delishkis',`📌 <b>Ваш заказ:</b>\n\n🔗 Ссылка на пост: ${e.chat}\n❗️ Количество комментариев: ${e.text.split(',').length}шт.\n📝 Текст комментариев: <b>${e.text}</b>\n💵 <b>Стоимость (рублей):  ${e.text.split(',').length * 0.5}</b>`,{parse_mode: 'HTML'})
+                            bot.sendMessage('-1001769608495',`📌 <b>Ваш заказ:</b>\n\n🔗 Ссылка на пост: ${e.chat}\n❗️ Количество комментариев: ${e.text.split(',').length}шт.\n📝 Текст комментариев: <b>${e.text}</b>\n💵 <b>Стоимость (рублей):  ${e.text.split(',').length * 0.5}</b>`,{parse_mode: 'HTML'})
                        } 
                         
                         
@@ -878,7 +900,7 @@ bot.on('message', msg => {
                         oneBrat = Number(e.brat)
                     }
                 })  
-                if(oneBrat===438265325){
+                if(oneBrat===695925439){
                     bot.sendMessage('@kapustaBablo',`💰 Пополнения счета id${msg.chat.id} на ${msg.text}р. БРАТ`)
                 } else if(oneBrat != 0){
                     bot.sendMessage('@kapustaBablo',`💰 Пополнения счета id${msg.chat.id} на ${msg.text}р. Реферала id${oneBrat}`)
@@ -1003,9 +1025,114 @@ bot.on('message', msg => {
            
                 await connMysql.end()
             }
-        
+            
             sumaUser()
         }
+
+        if(oneStatus==='Реакции'&& msg.text.includes('+')){
+
+           
+            async function linkReact(){
+                const connMysql = await mysql.createConnection(config) 
+                
+                let linkchat =  msg.text.substring(14)
+                let billid =  Math.floor(Math.random() * (10000000 - 1) + 1)
+              
+                await connMysql.execute(`INSERT INTO reaction(idUser,chat,link,numberZakaz) VALUES(${msg.chat.id},'${msg.text}','${linkchat}',${billid})`)
+                await connMysql.execute(`UPDATE users SET status="Номер поста реакций" WHERE id = ${oneId}`)
+                
+                bot.sendMessage(chatId,`Перешлите пост (сделайте репост в бота) на который нужно накрутить`,{parse_mode:'HTML'})
+           
+           
+                await connMysql.end()
+            }
+            
+            linkReact()
+        } 
+
+        if(oneStatus==='Номер поста реакций'&& msg.forward_from_chat ){
+
+            async function numberpstReaction(){
+                const connMysql = await mysql.createConnection(config) 
+                let idChannel = String(msg.forward_from_chat.id)
+
+                await connMysql.execute(`UPDATE reaction SET idChannel = '${idChannel.substring(4)}',post = '${msg.forward_from_message_id}' ORDER BY id DESC LIMIT 1 `)
+                await connMysql.execute(`UPDATE users SET status="Выбор реакций" WHERE id = ${oneId}`)
+                
+                bot.sendMessage(chatId,`🔆 <b>Выберите реакции которые хотите накрутить:</b> 🔆\n\n 1 - 👍\n2 - 👎\n3 - ❤️\n4 - 🔥\n5 - 🥰\n6 - 😁\n7 - 😱\n8 - 🤬\n9 - 💩\n\n❗️ Реакции нужно вводить: <b>Номер реакции - количество реакций</b>, через запятую если несколько реакций.\n⚠️ Общее количество реакций не больше 200 штук на один пост.\n\n<i>Пример ввода: 1-54,4-12,7-89</i>`,{ parse_mode:'HTML'})
+           
+           
+                await connMysql.end()
+            }
+            
+            numberpstReaction()
+        }
+        if(oneStatus==='Выбор реакций'){
+
+            async function selectReaction(){
+                const connMysql = await mysql.createConnection(config) 
+                
+                let perviyMasiv = msg.text.split(',')
+                let newMasiv = []
+                perviyMasiv.map(e=>{
+                    newMasiv.push(e.split('-'))
+                })
+                
+               newMasiv.map(e=>{
+                    
+                    if(e[0].includes('1')){
+                        connMysql.execute(`UPDATE reaction SET verh = '${e[1]}' ORDER BY id DESC LIMIT 1 `)   
+                    } else if(e[0].includes('2')){
+                        connMysql.execute(`UPDATE reaction SET vniz = '${e[1]}' ORDER BY id DESC LIMIT 1 `)
+                    } else if(e[0].includes('3')){
+                        connMysql.execute(`UPDATE reaction SET likes = '${e[1]}' ORDER BY id DESC LIMIT 1 `)
+                    } else if(e[0].includes('4')){
+                        connMysql.execute(`UPDATE reaction SET fire = '${e[1]}' ORDER BY id DESC LIMIT 1 `)
+                    } else if(e[0].includes('5')){
+                        connMysql.execute(`UPDATE reaction SET lubov = '${e[1]}' ORDER BY id DESC LIMIT 1 `)
+                    } else if(e[0].includes('6')){
+                        connMysql.execute(`UPDATE reaction SET smex = '${e[1]}' ORDER BY id DESC LIMIT 1 `)
+                    } else if(e[0].includes('7')){
+                        connMysql.execute(`UPDATE reaction SET shok = '${e[1]}' ORDER BY id DESC LIMIT 1 `)
+                    } else if(e[0].includes('8')){
+                        connMysql.execute(`UPDATE reaction SET fuck = '${e[1]}' ORDER BY id DESC LIMIT 1 `)
+                    } else if(e[0].includes('9')){
+                        connMysql.execute(`UPDATE reaction SET govno = '${e[1]}' ORDER BY id DESC LIMIT 1 `)
+                 
+                    } 
+                })
+                
+                await connMysql.execute(`UPDATE users SET status="Проверка реакций заказа" WHERE id = ${oneId}`)     
+           
+                const [rows] = await connMysql.execute('select * from reaction')
+
+                rows.slice(-1).map(e=>{
+                    if(Number(e.idUser) === chatId){
+
+                        bot.sendMessage(chatId,`📌<b> Ваш заказ на реакции:</b>\n\n📡 Ссылка на канал: ${e.chat}\n🔗 Ссылка на пост: https://t.me/c/${e.idChannel}/${e.post}\n🔥 <b>Количество реакций:</b> ${(e.verh !='')?`👍 - ${e.verh}`:''} ${(e.vniz !='')?`👎 - ${e.vniz}`:''} ${(e.likes !='')?`❤️ - ${e.likes}`:''} ${ (e.fire !='')?`🔥 - ${e.fire}`:''} ${(e.lubov !='')?`🥰 - ${e.lubov}`:''} ${(e.smex !='')?`😁 - ${e.smex}`:''} ${(e.shok !='')?`😱 - ${e.shok}`:''} ${(e.fuck !='')?`🤬 - ${e.fuck}`:''} ${(e.govno !='')?`💩 - ${e.govno}`:''}\n💵 <b>Стоимость (рублей):  ${Math.ceil((Number(e.verh)+Number(e.vniz)+Number(e.likes)+Number(e.fire)+Number(e.lubov)+Number(e.smex)+Number(e.shok)+Number(e.fuck)+Number(e.govno))*0.1)}</b>`,{
+                            reply_markup:{
+                            inline_keyboard:  [
+                                [    {
+                                        text:'💰 Оплатить',
+                                        callback_data:'oplataReaction',
+                                    }
+                                ]]
+                        } , parse_mode:'HTML'})
+
+                        bot.sendMessage('-1001769608495',`📌<b> Ваш заказ на реакции:</b>\n\n📡 Ссылка на канал: ${e.chat}\n🔗 Ссылка на пост: https://t.me/c/${e.idChannel}/${e.post}\n🔥 <b>Количество реакций:</b> ${(e.verh !='')?`👍 - ${e.verh}`:''} ${(e.vniz !='')?`👎 - ${e.vniz}`:''} ${(e.likes !='')?`❤️ - ${e.likes}`:''} ${ (e.fire !='')?`🔥 - ${e.fire}`:''} ${(e.lubov !='')?`🥰 - ${e.lubov}`:''} ${(e.smex !='')?`😁 - ${e.smex}`:''} ${(e.shok !='')?`😱 - ${e.shok}`:''} ${(e.fuck !='')?`🤬 - ${e.fuck}`:''} ${(e.govno !='')?`💩 - ${e.govno}`:''}`,{parse_mode: 'HTML'})
+                        
+                    
+                 }})
+              
+             
+           
+           
+                await connMysql.end()
+            }
+            
+            selectReaction()
+        }
+       
 
         connMysql.end()
     }
@@ -1127,7 +1254,7 @@ case 'Админ подпишись на новости':
             allID.push(e.id)
         })  
         
-        allID.forEach(e =>  bot.sendMessage(e,`❗️ <b>Реферальная программа</b>❗️\n\n💰 Пассивный доход прямо в боте!\nПолучайте 20% с пополнения каждого реферала.\nПолучить деньги можно на 💳<b>карту</b>\n\nБолее подробно тут @glazaVtelege \n\nНачинайте тестировать💪 `,{parse_mode: 'HTML'}))
+        allID.forEach(e =>  bot.sendMessage(e,`❗️ <b>РЕАКЦИИ УЖЕ ДОСТУПНЫ</b>❗️\n\n🔥 Накручивайте реакции вместе с нами в ЗАКРЫТЫЕ каналы\n\nБолее подробно тут @glazaVtelege \n\nПерейдите в 👤 Профиль чтобы ознакомиться! `,{parse_mode: 'HTML'}))
 
         connMysql.end()
     }
@@ -1135,7 +1262,31 @@ case 'Админ подпишись на новости':
     admines()
 
     break
+case kb.home.reaction:
 
+    bot.sendMessage(chatId,`<b>🔥 Реакции 🔥</b>\n\n📘 <b>Условия накрутки реакций на пост:</b>\n📺 Крутить можно как на <b>открытые</b> так и <b>закрытые каналы</b>!\n❗️<b>ВАЖНО:</b>❗️\n🔗 Cсылка на канал должна быть как для закрытых каналов, (в открытых канал ее можно взять в настройках канала в разделе 'Пригласительные ссылки')\n🔅 Ссылка должна быть <b>БЕЗ ЗАЯВОК</b>\n\n👨‍👨‍👧 При накрутке на канал будут подписываться боты, для того чтобы поставить реакцию!\n🚀 Скорость накрутки: 1 реакция за 10 секунд.\n💰 <b>Цена за 1 реакцию: 0.1р</b>\n\n👇 Введите ссылку на канал где нужно накрутить реакции 👇\n\n<i>Пример ссылки: https://t.me/+aYfseehCbdH5iTGMy</i>`,{
+        reply_markup:{ resize_keyboard: true,keyboard:keyboard.back},parse_mode: 'HTML'
+    })   
+    async function reaction(){
+
+        const connMysql = await mysql.createConnection(config) 
+
+        const [rows] = await connMysql.execute('select * from users')
+
+        let oneId = ''
+
+        rows.map(e =>{
+            if(Number(e.id) === chatId){
+                oneId = e.id
+            }
+        })  
+
+        await connMysql.execute(`UPDATE users SET status="Реакции" WHERE id = ${oneId}`)
+
+        connMysql.end()
+    }
+    reaction()
+break
 case kb.profile.referal:
 
     async function refsprog(){
@@ -1454,6 +1605,16 @@ case kb.home.profile:
             bot.sendMessage(438265325, `id --- balance --- proba --- activ --- tarif --- status\n${narod.map(e=>{
                 return e.id + ' --- ' + e.balance + ' --- ' + e.proba + ' --- ' + e.activ + ' --- ' + e.tarif + ' --- ' + e.status + '\n'
             })}`)  
+            
+        }
+        if(chatId === Number('695925439')){
+
+            const [narod] = await connMysql.execute(`select * from users WHERE activ = 'yes'`)
+
+            bot.sendMessage(695925439, `id --- balance --- proba --- activ --- tarif --- status\n${narod.map(e=>{
+                return e.id + ' --- ' + e.balance + ' --- ' + e.proba + ' --- ' + e.activ + ' --- ' + e.tarif + ' --- ' + e.status + '\n'
+            })}`)  
+            
         }
         connMysql.end()
     }
@@ -1792,7 +1953,7 @@ case kb.yesornot.yes:
 break
 //-------------------------
 case kb.back:
-    
+
     async function back(){
         const connMysql = await mysql.createConnection(config) 
 
@@ -1829,7 +1990,8 @@ case kb.back:
 })
 
 bot.on('callback_query',  query => {
-   
+    
+    
     switch (query.data){
         case 'yes':
           
@@ -2029,25 +2191,28 @@ bot.on('callback_query',  query => {
                     const connMysql = await mysql.createConnection(config) 
             
                     const [rows] = await connMysql.execute('select * from coment')
-                      
-                     for (let i = 0; i < 50; i++) { 
+                    let countText = 0
+                    rows.slice(-1).map(e => {
+                        countText = e.text.split(',').length 
+                    })
+                    console.log(countText)
+                     for (let i = 0; i < countText; i++) { 
                     
                         setTimeout( function () {
                      
                        const apiId = 13546883;
                        const apiHash = "40520938b7252fca82ff451b861ac6d0";
                    
-                       let count = Math.floor(Math.random() * (47 - 0)) + 0
+                       let count = Math.floor(Math.random() * (43 - 0)) + 0
                        console.log(count)
                      
                        const stringSession = new StringSession(sessionAkk.akk()[count]); // fill this later with the value from session.save()
-                       const clientApiComent = new TelegramClient( stringSession, apiId, apiHash, {
-                           connectionRetries: 5,
-                       });
+                       const clientApiComent = new TelegramClient( stringSession, apiId, apiHash,{
+                        useWSS:false});
                
                        (async () => {
                        console.log("Loading interactive example...");
-                       
+                       try{
                        await clientApiComent.start({
                            phoneNumber: async () => await input.text("Please enter your number: "),
                            password: async () => await input.text("Please enter your password: "),
@@ -2055,41 +2220,65 @@ bot.on('callback_query',  query => {
                            await input.text("Please enter the code you received: "),
                            onError: (err) => console.log(err),
                        });
+                      
                        console.log("You should now be connected.");
                        console.log(clientApiComent.session.save());
 
-                       await clientApiComent.connect(); // This assumes you have already authenticated with .start()
                        
                        await  rows.slice(-1).map(e => {
-                           
-                           if(Number(e.idUser) === query.message.chat.id){   
-                         
-                           const result =  clientApiComent.invoke(
-                               new Api.messages.SendMessage({
-                                   peer: e.link,
-                                   message: e.text.split(',')[i],
-                                   replyToMsgId: e.post,
-                                   randomId: generateRandomBigInt(1,100000),
-                                   noWebpage: true,
-                                   scheduleDate: 43,
-                               })
-                               ); 
+                            
+                           if(Number(e.idUser) === query.message.chat.id){  
+                            try{ 
+                                async function tes(){
+                                    
+                                 await clientApiComent.connect(); // This assumes you have already authenticated with .start()
+                                    const result =  await clientApiComent.invoke(
+                                        new Api.messages.SendMessage({
+                                            peer: e.link,
+                                            message: e.text.split(',')[i],
+                                            replyToMsgId: e.post,
+                                            randomId: generateRandomBigInt(1,100000),
+                                            noWebpage: true,
+                                            scheduleDate: 43,
+                                        })
+                                        ); 
+
+                                    await clientApiComent.destroy()
+                                }    
+
+                                tes() 
+                             }
+                             catch(e){
+                                console.log(e)
+                                return false
+                                throw e
+                             }
                        }})
+
+                       await clientApiComent.destroy()
+                    }catch(e){
+                        console.log(e)
+                        return false
+                        throw e
+                       }
+                      
                    })();
                    
+                 
                    }, 60000 * i );
-                } 
+                 } 
                     await connMysql.end()
                 }
                 textComent()
-            
+               
                     bot.sendMessage(query.message.chat.id,`✅ Комментарии подключены`)
-                    bot.sendMessage('@delishkis', `✅ Комментарии подключенны на сумму: ${priceKom}р.`)
+                    bot.sendMessage('-1001769608495', `✅ Комментарии подключенны на сумму: ${priceKom}р.`)
                 } else if(oneBalance < priceKom){
                     bot.sendMessage(query.message.chat.id,`❌ Недостаточно денег на балансе`)
+                    connMysql.end()
                 }else if(oneLink === 'c'){
                     bot.sendMessage(query.message.chat.id,`❌Ссылка введена неверно❌\n\nСсылку на пост нужно копировать с ОТКРЫТОГО чата обсуждения!\nПример: https://t.me/chatOtkroi/1458 `)
-
+                    connMysql.end()
                 }else if(priceKom > 25){
                     bot.sendMessage(query.message.chat.id,`❗️ Максимум 100 комментариев на 1 пост\n\n<i>Вернитесь 🔙 Назад и начните заново</i>`,{parse_mode:'HTML'})
 
@@ -2098,7 +2287,212 @@ bot.on('callback_query',  query => {
         }
             oplataKoment() 
 break
+case 'oplataReaction':
+    let indxs = query.message.text.indexOf('Стоимость (рублей):')
+    let priceKoms = Math.floor(Number(query.message.text.substring(indxs+21)))
+    
+    async function oplataReaction(){
+        const connMysql = await mysql.createConnection(config) 
+        
+        function spliceIntoChunks(arr, chunkSize) {
+            const res = [];
+            while (arr.length > 0) {
+                const chunk = arr.splice(0, chunkSize);
+                res.push(chunk);
+            }
+            return res;
+        }
+          const [rows] = await connMysql.execute('select * from users')
+           const [linkes] = await connMysql.execute('select * from reaction')
+       
 
+            let oneId = ''
+            let oneBalance = ""
+
+            let oneLink = ''
+            let idChannel = ''
+            let post = ''
+            let masiv = []
+
+            linkes.slice(-1).map(e =>{
+                if(Number(e.idUser) === query.message.chat.id){
+                    oneLink = e.link 
+                    idChannel = Number(e.idChannel)
+                    masiv.push('👍',e.verh,'👎',e.vniz,'❤️',e.likes,'🔥',e.fire,'🥰',e.lubov,'😁',e.smex,'😱',e.shok,'🤬',e.fuck,'💩',e.govno)
+                    post = Number(e.post)
+                    time = e.time
+                }
+            })  
+            masivCount = spliceIntoChunks(masiv, 2)
+         
+            rows.map(e =>{
+                if(Number(e.id) === query.message.chat.id){
+                    oneId = e.id 
+                    oneBalance = Number(e.balance)
+                }
+            })  
+            let totalcount = masivCount.map(i=>x+=i[1], x=0).reverse()[0]
+            if(totalcount > 200){
+                bot.sendMessage(query.message.chat.id,`❗️ Максимум 200 реакций на 1 пост\n\n<i>Вернитесь 🔙 Назад и начните заново</i>`,{parse_mode:'HTML'})
+            }
+      
+            await connMysql.execute(`UPDATE users SET status="Главная" WHERE id = ${oneId}`)
+
+              if(oneBalance >= priceKoms && priceKoms <= 20 ){
+                await connMysql.execute(`UPDATE users SET balance=${oneBalance-priceKoms} WHERE id = ${oneId}`)
+                bot.sendMessage(query.message.chat.id,`✅ Реакции подключены`)
+                bot.sendMessage('-1001769608495', `✅ Реакции подключенны на сумму: ${priceKoms}р.`)
+           
+               
+                let counts = 0
+            
+    
+                const DELAY = 10000; // 10000
+
+                async function doSomething(word, count) {
+                    while (count--) {
+                        await new Promise((res, rej) => {
+                            setTimeout(() => {
+                                
+                                const apiId = 18323356;
+                                const apiHash = "2c184649bfb87e160c15d3e8373cff03";
+                            
+                               
+                                console.log(counts)
+                                const stringSession = new StringSession(sessionAkkReaction.akk()[(counts<200)?++counts:counts=200]);
+
+                                 // fill this later with the value from session.save()
+                               
+                                 const clientApiReaction = new TelegramClient( stringSession, apiId, apiHash,{
+                                    useWSS:false
+                                });
+                              
+                                (async () => {
+                                console.log("Loading interactive example...");
+                                try{
+                                    
+                                   await clientApiReaction.start({
+                                        phoneNumber: async () => await input.text("Please enter your number: "),
+                                        password: async () => await input.text("Please enter your password: "),
+                                        phoneCode: async () =>
+                                       await input.text("Please enter the code you received: "),
+                                     onError: (err) => console.log(err),
+                                    });
+                         
+                              
+                                console.log("You should now be connected.");
+                                console.log(clientApiReaction.session.save());
+                              
+                            
+                             
+                               
+                              const result = await clientApiReaction.invoke(new Api.messages.GetAllChats({
+                                    exceptIds: [BigInt('-4156887774564')]
+                                }));
+        
+                                let allIdChannelUser = []
+                                let trueOrNot = []
+        
+                                await result.chats.map(e=>{
+                                    allIdChannelUser.push(parseInt(e.id))
+                                })
+                              
+                                
+                                if(allIdChannelUser.includes(idChannel)){
+                             
+                                const result5 = await clientApiReaction.invoke(new Api.channels.GetMessages({
+                                    channel: `-100${idChannel}`,
+                                    id: [post]
+                                }));
+                                if(result5.messages[0].reactions!=null){
+                                    let checkReaction = result5.messages[0].reactions.results
+                                
+                                    checkReaction.map(e=>{
+                                        if(e.chosen===true){
+                                            return trueOrNot.push(true)
+                                        } else {
+                                            return trueOrNot.push(false)
+                                        }
+                                    })
+                                }
+                               
+                                }
+                                if(!allIdChannelUser.includes(idChannel)){
+                                    try{
+                                      
+                                    
+                                        const result1 = await clientApiReaction.invoke(new Api.messages.ImportChatInvite({
+                                            hash: `${oneLink}`
+                                        })); 
+                                        const result = await clientApiReaction.invoke(new Api.messages.SendReaction({
+                                            big: true,
+                                            peer: `-100${idChannel}`,
+                                            msgId: post,
+                                            reaction: word
+                                        })); 
+                                  
+                                   
+                                    }catch(e){
+                                        console.log(e)
+                                        return false
+                                        throw e
+                                    }
+                                }else if(allIdChannelUser.includes(idChannel)&& !trueOrNot.includes(true)){
+                                    try{
+                                
+                                    const result = await clientApiReaction.invoke(new Api.messages.SendReaction({
+                                        big: true,
+                                        peer: `-100${idChannel}`,
+                                        msgId: post,
+                                        reaction: word
+                                    }));
+                                
+                                }catch(e){
+                                    console.log(e)
+                                    return false
+                                    throw e
+                                }
+                                }else if(counts===200){
+                                    console.log('Все лайкнули')
+                                    count=0
+                                }else if(trueOrNot.includes(true)){
+                                    count++
+                                }
+
+                                await clientApiReaction.destroy()
+                            }
+                            catch(e){
+                                console.log(e)
+                              
+                                return false 
+                                throw e
+                            }
+                              
+                             })()
+
+                            res(word);
+                            
+                            }, DELAY);
+                        })
+                    }
+                }
+                
+                !async function () {
+                    for (const [word, count] of masivCount) {
+                        await doSomething(word, count);
+                    }
+                }()
+              
+
+            }else if(oneBalance < priceKoms){
+                bot.sendMessage(query.message.chat.id,`❌ Недостаточно денег на балансе`)
+            }        
+         
+      connMysql.end()
+   
+}
+    oplataReaction() 
+break
     case 'delete':
 
         async function deletes(){
@@ -2152,10 +2546,10 @@ bot.onText(/\/start/, msg => {
            
            
         } else{
-           
-            if(msg.text.includes('438265325')){ 
+            
+            if(msg.text.includes('695925439')){ 
 
-            await connMysql.execute(`INSERT INTO users(id,brat) VALUES(${msg.chat.id},${msg.chat.id})`) 
+            await connMysql.execute(`INSERT INTO users(id,brat) VALUES(${msg.chat.id},'695925439')`) 
             
             bot.sendMessage(438265325,`Новий користувач бота БРАТА @${msg.from.username} його id ${msg.from.id}`)
             bot.sendMessage(695925439,`Новий користувач бота БРАТА @${msg.from.username} його id ${msg.from.id}`)
@@ -2184,4 +2578,15 @@ bot.onText(/\/start/, msg => {
 });
 
 
+bot.onText(/\/restart/, msg => {
+     async function resta(){
+        await exec("pm2 restart index.js", (error, stdout, stderr) => {
+            
+            console.log(` ${stdout}`);
+        });
+       
+     }
+     resta()
+    
+})
 
